@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lenovo AI Showcase · Make Lenovo AI-native</title>
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --brand:    #E2231A;
+  --brand-dk: #BE1915;
+  --brand-lt: #FFF0EF;
+
+  /* Lenovo ink scale */
+  --ink:      #171717;
+  --ink-2:    #4E444E;
+  --ink-3:    #787878;
+  --ink-4:    #AAAAAA;
+
+  /* Lenovo surfaces */
+  --bg:       #F2F2F2;
+  --surface:  #FFFFFF;
+  --border:   #E0E0E0;
+  --border-lt:#EFEFEF;
+
+  /* Lenovo spacing (8px grid) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 40px;
+
+  /* Lenovo shadows */
+  --sh-sm: 0 1px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --sh-md: 0 6px 20px rgba(0,0,0,0.10);
+  --sh-lg: 0 20px 60px rgba(0,0,0,0.18);
+
+  /* Lenovo border-radius */
+  --r:      12px;   /* containers */
+  --r-sm:   8px;    /* cards, inputs */
+  --r-pill: 99px;   /* pills, chips */
+
+  --ease:   cubic-bezier(.4,0,.2,1);
+  --font:   'Noto Sans', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  font-family: var(--font);
+  background: #EBEBEB; color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  margin: 0;   /* belt-and-suspendlers against UA defaults */
+}
+
+/* ── PAGE ── */
+.page {
+  display: flex; flex-direction: column;
+  width: 100vw; height: 100dvh;   /* dvh = dynamic viewport (handles mobile chrome) */
+  overflow: hidden;
+  position: relative;
+}
+
+/* ════════════════════════════════════════
+   LENOVO SMARTER GRADIENT — PASSION
+   Palette: White → Pale Gray → Pale Red → Pale Blue
+   Per Lenovo Brand World alpha pattern guidelines
+════════════════════════════════════════ */
+.page::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    /* Deep red orb — top-left */
+    radial-gradient(ellipse 50% 60% at 8% 8%,
+      rgba(129, 28, 35, 0.18) 0%,
+      rgba(100, 19, 30, 0.08) 40%,
+      transparent 70%),
+    /* Purple orb — top-right */
+    radial-gradient(ellipse 55% 50% at 92% 6%,
+      rgba(77, 20, 74, 0.14) 0%,
+      rgba(122, 18, 107, 0.06) 45%,
+      transparent 70%),
+    /* Blue orb — bottom-right */
+    radial-gradient(ellipse 60% 55% at 88% 94%,
+      rgba(41, 78, 149, 0.14) 0%,
+      rgba(17, 24, 79, 0.06) 45%,
+      transparent 70%),
+    /* Pale red orb — bottom-left */
+    radial-gradient(ellipse 50% 45% at 12% 92%,
+      rgba(240, 199, 191, 0.60) 0%,
+      rgba(250, 236, 235, 0.40) 40%,
+      transparent 70%),
+    /* Base gradient — Passion palette, 150° */
+    linear-gradient(150deg,
+      #FFFFFF 0%,
+      #E6E2E4 18%,
+      #F0C7BF 38%,
+      #FAECEB 55%,
+      #EAEEF5 75%,
+      #C9D0F0 100%);
+  animation: lenovoShift 24s ease-in-out infinite alternate;
+}
+.page::after {
+  content: '';
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    /* Mid-tone shift orbs */
+    radial-gradient(ellipse 45% 50% at 75% 15%,
+      rgba(201, 208, 240, 0.55) 0%,
+      rgba(234, 238, 245, 0.30) 50%,
+      transparent 75%),
+    radial-gradient(ellipse 40% 55% at 30% 85%,
+      rgba(240, 199, 191, 0.50) 0%,
+      rgba(250, 236, 235, 0.25) 50%,
+      transparent 70%),
+    radial-gradient(ellipse 35% 40% at 55% 50%,
+      rgba(217, 193, 216, 0.30) 0%,
+      transparent 65%),
+    linear-gradient(330deg,
+      #FAFAFA 0%,
+      #EAEEF5 30%,
+      #F1E1ED 55%,
+      #FAECEB 80%,
+      #FAFAFA 100%);
+  animation: lenovoShift2 30s ease-in-out infinite alternate;
+}
+@keyframes lenovoShift {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.82; }
+  100% { opacity: 1; }
+}
+@keyframes lenovoShift2 {
+  /* Opacity-only animation — no transform for Edge/CRT perf */
+  0%   { opacity: 0; }
+  40%  { opacity: 0.60; }
+  100% { opacity: 0; }
+}
+
+/* ── HEADER ── */
+.site-hdr {
+  flex: 0 0 auto; height: 56px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0 var(--sp-6);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4);
+  position: relative; z-index: 10;
+}
+.site-hdr::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--brand), #FF7A6B, var(--brand));
+}
+.hdr-l { display: flex; align-items: center; gap: var(--sp-3); }
+.hdr-r { display: flex; align-items: center; gap: var(--sp-2); }
+
+.hdr-wm {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.02em; line-height: 1;
+  color: var(--ink); white-space: nowrap;
+}
+.hdr-wm b { color: var(--brand); font-weight: 900; }
+.hdr-pipe { width: 1px; height: 14px; background: var(--border); }
+.hdr-sub  { font-size: 12px; font-weight: 500; color: var(--ink-3); letter-spacing: 0.01em; }
+
+.h-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 13px; border-radius: var(--r-sm);
+  font-size: 11.5px; font-weight: 700; font-family: var(--font);
+  border: 1.5px solid var(--border); background: var(--surface);
+  color: var(--ink-2); cursor: pointer; transition: all 0.14s;
+}
+.h-btn:hover { border-color: var(--ink-3); color: var(--ink); }
+.h-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.h-btn svg { width: 12px; height: 12px; }
+
+.h-reset {
+  display: none; align-items: center; gap: 4px;
+  padding: 5px 11px; border-radius: var(--r-sm);
+  font-size: 11px; font-weight: 600; font-family: var(--font);
+  border: 1.5px solid var(--border); background: transparent;
+  color: var(--ink-4); cursor: pointer; transition: all 0.14s;
+}
+.h-reset:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-lt); }
+body.edit-mode .h-reset { display: inline-flex; }
+.h-export { margin-left: 4px; }
+
+.h-badge {
+  padding: 3px 11px; border-radius: var(--r-pill);
+  font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--brand); color: #fff;
+}
+
+/* ── FILTER BAR ── */
+.f-bar {
+  flex: 0 0 auto; height: 40px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0 var(--sp-6);
+  display: flex; align-items: center; gap: var(--sp-2);
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+  position: relative; z-index: 10;
+}
+.f-bar::-webkit-scrollbar { display: none; }
+
+.f-sep { width: 1px; height: 16px; background: var(--border); flex-shrink: 0; margin: 0 4px; }
+
+.f-chip {
+  display: inline-flex; align-items: center;
+  padding: 4px 13px; border-radius: var(--r-pill);
+  font-size: 11.5px; font-weight: 600; font-family: var(--font);
+  border: 1.5px solid var(--border); background: transparent; color: var(--ink-3);
+  cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.14s;
+}
+.f-chip:hover { color: var(--ink); border-color: var(--ink-3); }
+.f-chip-active-all,
+.f-chip-active-team { background: var(--ink) !important; border-color: var(--ink) !important; color: #fff !important; }
+
+.chip-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+.chip-ctrl {
+  display: none; position: absolute; top: -10px; right: -8px;
+  gap: 1px; background: #fff; border-radius: 5px; padding: 1px;
+  box-shadow: var(--sh-sm); border: 1px solid var(--border); z-index: 20;
+}
+body.edit-mode .chip-ctrl { display: flex; }
+.chip-btn {
+  width: 15px; height: 15px; border-radius: 3px; border: none;
+  background: transparent; cursor: pointer;
+  font-size: 7.5px; display: flex; align-items: center; justify-content: center;
+  color: var(--ink-3); transition: all 0.12s;
+}
+.chip-btn:hover      { background: var(--bg); color: var(--ink); }
+.chip-btn.del:hover  { background: var(--brand-lt); color: var(--brand); }
+
+.add-chip-btn {
+  display: none; align-items: center; gap: 3px;
+  padding: 4px 10px; border-radius: var(--r-pill); flex-shrink: 0;
+  font-size: 11px; font-weight: 600; font-family: var(--font);
+  border: 1.5px dashed var(--border); background: transparent; color: var(--ink-4);
+  cursor: pointer; transition: all 0.14s; white-space: nowrap;
+}
+.add-chip-btn:hover { border-color: var(--ink-3); color: var(--ink); }
+body.edit-mode .add-chip-btn { display: inline-flex; }
+
+/* ── BODY: flex-wrap grid — columns natural height, CSS handles all layout ── */
+.l2-strip {
+  flex: 1 1 auto; min-height: 0;
+  padding: var(--sp-5);
+  display: flex; flex-wrap: wrap; align-content: flex-start;
+  gap: var(--sp-4);
+  overflow-y: auto; overflow-x: hidden;
+  position: relative; z-index: 1;
+}
+
+/* ── L2 COLUMN — Liquid Glass ── */
+.l2-col {
+  /* basis 240px, grow/shrink freely, capped at 420px */
+  flex: 1 1 240px; min-width: 240px; max-width: 420px;
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-radius: var(--r);
+  border-top: 1px solid rgba(255,255,255,0.70);
+  border-left: 1px solid rgba(255,255,255,0.50);
+  border-right: 0.5px solid rgba(255,255,255,0.25);
+  border-bottom: 0.5px solid rgba(255,255,255,0.15);
+  box-shadow:
+    0 8px 40px rgba(100, 120, 200, 0.10),
+    0 2px 8px rgba(80, 100, 180, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.80);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+  transition: box-shadow 0.3s, transform 0.25s;
+}
+
+.l2-col:hover {
+  box-shadow:
+    0 16px 56px rgba(100, 120, 200, 0.14),
+    0 4px 16px rgba(80, 100, 180, 0.08),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.70),
+    inset 0 1px 2px rgba(255, 255, 255, 0.90);
+}
+body.edit-mode .l2-col { cursor: grab; }
+body.edit-mode .l2-col:active { cursor: grabbing; }
+.l2-col:hover { box-shadow: var(--sh-md); }
+.l2-col.drag-over { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-lt), var(--sh-md); }
+.l2-col.dragging  { opacity: 0.45; }
+
+/* L2 column header */
+.l2-hdr {
+  flex: 0 0 auto;
+  background: #1A1A1A; color: #fff;
+  padding: 8px 10px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  position: relative; overflow: hidden;
+}
+.l2-hdr-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--brand);
+}
+.drag-handle {
+  display: none; flex-shrink: 0;
+  color: rgba(255,255,255,0.4); font-size: 13px; font-weight: 700;
+  cursor: grab; line-height: 1; padding: 2px;
+  user-select: none;
+}
+.drag-handle:active { cursor: grabbing; }
+body.edit-mode .drag-handle { display: block; }
+
+.l2-hdr-name { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; flex: 1; }
+.l2-hdr-ctrl {
+  display: none; gap: 2px;
+}
+body.edit-mode .l2-hdr-ctrl { display: flex; }
+.l2-hdr-btn {
+  width: 18px; height: 18px; border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6); cursor: pointer;
+  font-size: 9px; display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+.l2-hdr-btn:hover      { background: rgba(255,255,255,0.18); color: #fff; }
+.l2-hdr-btn.del:hover  { background: rgba(226,35,26,0.4); border-color: rgba(226,35,26,0.6); }
+.l2-add-btn {
+  flex: 0 0 auto; display: none;
+  padding: 6px 10px; margin: 6px 8px 8px;
+  border: 1.5px dashed var(--border); border-radius: var(--r-sm);
+  background: transparent; color: var(--ink-4); font-size: 10.5px; font-weight: 600;
+  font-family: var(--font); cursor: pointer; width: calc(100% - 16px);
+  align-items: center; justify-content: center; gap: 4px; transition: all 0.14s;
+}
+.l2-add-btn:hover { border-color: var(--ink-3); color: var(--ink); background: var(--bg); }
+body.edit-mode .l2-add-btn { display: flex; }
+
+/* ── L3 GROUP INSIDE L2 COLUMN ── */
+.l3-group { display: flex; flex-direction: column; }
+
+.l3-label {
+  flex: 0 0 auto;
+  padding: 6px 10px 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+  position: relative;
+}
+.l3-label::before {
+  content: ''; width: 3px; height: 12px; border-radius: 2px; flex-shrink: 0;
+  background: currentColor;
+}
+.l3-label-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  opacity: 0.5;
+}
+.l3-label-edit {
+  display: none; margin-left: auto;
+  gap: 2px;
+}
+body.edit-mode .l3-label-edit { display: flex; }
+.l3-edit-btn {
+  width: 14px; height: 14px; border-radius: 3px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--ink-3); cursor: pointer; font-size: 8px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.12s;
+}
+.l3-edit-btn:hover     { background: var(--bg); color: var(--ink); }
+.l3-edit-btn.del:hover { background: var(--brand-lt); color: var(--brand); }
+
+/* L3 cards */
+.l3-cards { display: flex; flex-direction: column; gap: var(--sp-2); padding: 0 var(--sp-2) var(--sp-2); }
+.l3-cards.drag-over { outline: 2px dashed var(--brand); outline-offset: 4px; border-radius: var(--r-sm); }
+body.edit-mode .proj-card.dragging { opacity: 0.4; transform: rotate(1deg) scale(0.97); }
+
+/* ── CARD ── */
+.proj-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid;
+  border-radius: var(--r-sm);  /* 8px per Lenovo spec */
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  display: flex; flex-direction: column; gap: 2px;
+  position: relative; overflow: hidden;
+  box-shadow: var(--sh-sm);
+  transition: transform 0.16s var(--ease), box-shadow 0.16s, background 0.14s;
+  cursor: default;
+}
+.proj-card:hover { transform: translateX(2px); box-shadow: var(--sh-sm); }
+
+/* Card header: number + title + AI tag (all on one row) */
+.card-top {
+  display: flex; align-items: center; gap: 7px;
+}
+.card-num {
+  font-size: 22px; font-weight: 900; line-height: 1;
+  letter-spacing: -0.03em; flex-shrink: 0; min-width: 28px;
+}
+.card-badges { display: flex; align-items: center; gap: 3px; flex-wrap: nowrap; overflow: hidden; }
+.card-badge {
+  padding: 1px 5px; border-radius: 3px;
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.04em;
+  white-space: nowrap; border: 1px solid;
+}
+.card-badge-team { background: var(--bg); color: var(--ink-4); border-color: var(--border); }
+
+/* Title + AI — flex row, AI pushed right */
+.card-row {
+  display: flex; align-items: center; gap: 5px;
+  flex: 1; min-width: 0;
+}
+.card-name { font-size: 11.5px; font-weight: 700; color: var(--ink); line-height: 1.35; flex: 1; min-width: 0; }
+.ai-tag {
+  flex-shrink: 0; display: inline-flex; align-items: center;
+  padding: 2px 6px; border-radius: 4px;
+  font-size: 7.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--brand); color: #fff;
+}
+.star-tag {
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; border-radius: 50%;
+  font-size: 12px; color: #FFB800;
+  background: #FFF8E1; border: 1px solid #FFE082;
+}
+.metric-tag {
+  flex-shrink: 0; padding: 2px 6px; border-radius: var(--r-sm);
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap;
+}
+.metric-cost {
+  background: #FFF3E0; color: #E65100; border: 1px solid #FFE0B2;
+}
+.metric-eff {
+  background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9;
+}
+
+/* Desc */
+.card-desc {
+  font-size: 10px; color: var(--ink-3); line-height: 1.45;
+  margin-top: 2px;
+  /* Allow absolutely-positioned "more" button inside */
+  position: relative;
+}
+/* Collapsed state — clamp to ~3 lines */
+.card-desc.clamped {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* Use fixed height so "more" button anchors to bottom-right */
+  height: calc(10px * 1.45 * 3 + 2px);
+}
+/* more button — pill badge at bottom-right of clamped text */
+.card-more {
+  position: absolute; bottom: 2px; right: 4px;
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 2px 7px;
+  border-radius: var(--r-sm);   /* 8px pill */
+  font-size: 9px; font-weight: 700; letter-spacing: 0.03em;
+  color: var(--ink-2);
+  background: rgba(255,255,255,0.92);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+  cursor: pointer; user-select: none;
+  line-height: 1;
+}
+.card-more:hover {
+  background: var(--ink); color: #fff;
+  border-color: var(--ink);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.card-more.expanded {
+  position: static;
+  background: transparent; border: none; box-shadow: none;
+  padding: 0 2px;
+  color: var(--ink-3);
+}
+.card-more.expanded:hover { color: var(--ink); background: transparent; border: none; }
+
+/* Demo row — button pushed to right */
+.card-demo {
+  display: flex; align-items: center; justify-content: flex-end; margin-top: 4px;
+}
+.btn-demo {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px 3px 8px; border-radius: var(--r-pill);
+  font-size: 9.5px; font-weight: 700; font-family: var(--font);
+  border: 1.5px solid; background: transparent; cursor: pointer; transition: all 0.14s;
+}
+.btn-demo svg { width: 11px; height: 11px; flex-shrink: 0; }
+.btn-demo:hover { transform: scale(1.04); }
+
+/* Card edit controls */
+.card-ctrl {
+  display: none; position: absolute; top: 4px; right: 4px; z-index: 10;
+  gap: 1px; background: rgba(255,255,255,0.96);
+  border-radius: 4px; padding: 2px;
+  box-shadow: var(--sh-sm); border: 1px solid var(--border);
+}
+body.edit-mode .card-ctrl { display: flex; }
+.cbtn {
+  width: 17px; height: 17px; border-radius: 3px; border: none;
+  background: transparent; cursor: pointer;
+  font-size: 8.5px; display: flex; align-items: center; justify-content: center;
+  color: var(--ink-3); transition: all 0.12s;
+}
+.cbtn:hover      { background: var(--bg); color: var(--ink); }
+.cbtn.del:hover  { background: var(--brand-lt); color: var(--brand); }
+
+/* ── EMPTY COLUMN ── */
+.l2-empty {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 20px 10px; color: var(--ink-4); font-size: 11px; text-align: center;
+}
+
+/* Add L2 column button (edit mode, at end of strip) */
+.add-l2-cell {
+  flex: 0 0 auto; width: 240px;
+  display: none; align-items: center; justify-content: center;
+  border: 1.5px dashed var(--border); border-radius: var(--r);
+  min-height: 120px; cursor: pointer;
+  color: var(--ink-4); font-size: 11px; font-weight: 600;
+  flex-direction: column; gap: var(--sp-2);
+  transition: all 0.14s; background: transparent;
+}
+.add-l2-cell:hover { border-color: var(--ink-3); color: var(--ink); background: var(--surface); }
+body.edit-mode .add-l2-cell { display: flex; }
+
+/* ── FOOTER ── */
+.site-ftr {
+  flex: 0 0 auto; height: 40px;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 0 var(--sp-6);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 10;
+}
+
+/* ── LENOVO BADGE — fixed right side ── */
+.lenovo-badge {
+  position: fixed; right: 0; top: 50%;
+  z-index: 50;
+  opacity: 0.70;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.lenovo-badge:hover { opacity: 0.90; }
+.lenovo-badge img {
+  transform: rotate(-90deg);
+  transform-origin: right center;
+  position: relative;
+  right: 20px;
+}
+.ftr-note  { font-size: 10px; color: var(--ink-4); }
+.ftr-count { font-size: 11px; font-weight: 700; color: var(--ink-3); }
+.ftr-count span { color: var(--brand); }
+
+/* Site-level edit pencil — header & footer */
+.site-edit-btn {
+  display: none; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 4px;
+  border: 1px solid var(--border); background: var(--bg);
+  color: var(--ink-3); cursor: pointer; font-size: 10px;
+  flex-shrink: 0; transition: all 0.14s; margin-left: 4px;
+}
+.site-edit-btn:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-lt); }
+body.edit-mode .site-edit-btn { display: inline-flex; }
+.site-edit-btn--ftr { position: absolute; right: 100px; }
+
+/* ── EDIT MODAL ── */
+#em-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.36); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+#em-overlay.open { opacity: 1; pointer-events: all; }
+#em-box {
+  background: var(--surface); border-radius: 14px;
+  width: 420px; max-width: 92vw; max-height: 88vh; overflow-y: auto;
+  box-shadow: var(--sh-lg); border: 1px solid var(--border);
+  animation: emPop 0.2s var(--ease);
+}
+@keyframes emPop { from{opacity:0;transform:scale(0.95) translateY(10px);} to{opacity:1;transform:none;} }
+.em-head {
+  padding: 18px 20px 14px;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border-lt);
+}
+.em-title { font-size: 14px; font-weight: 800; color: var(--ink); }
+.em-lv {
+  padding: 2px 8px; border-radius: 4px;
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  background: var(--bg); color: var(--ink-3);
+}
+.em-x {
+  margin-left: auto; width: 26px; height: 26px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg); color: var(--ink-3);
+  cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center; transition: all 0.13s;
+}
+.em-x:hover { background: var(--brand-lt); color: var(--brand); border-color: var(--brand); }
+.em-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.em-field { display: flex; flex-direction: column; gap: 4px; }
+.em-field label { font-size: 11px; font-weight: 700; color: var(--ink-2); }
+.em-field input, .em-field textarea, .em-field select {
+  width: 100%; padding: 8px 10px;
+  border: 1.5px solid var(--border); border-radius: 7px;
+  font-size: 12.5px; color: var(--ink); background: var(--bg);
+  outline: none; font-family: var(--font); transition: border-color 0.15s;
+}
+.em-field input:focus, .em-field textarea:focus, .em-field select:focus { border-color: var(--ink); background: #fff; }
+.em-field textarea { resize: vertical; min-height: 52px; }
+.em-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; border-radius: 7px;
+  border: 1.5px solid var(--border); background: var(--bg);
+}
+.em-row-label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.tsw {
+  width: 34px; height: 19px; border-radius: 10px;
+  background: var(--border); cursor: pointer; position: relative;
+  transition: background 0.17s; border: none; padding: 0;
+}
+.tsw.on { background: var(--brand); }
+.tsw::after {
+  content: ''; position: absolute; top: 2.5px; left: 2.5px;
+  width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  transition: transform 0.17s;
+}
+.tsw.on::after { transform: translateX(15px); }
+.color-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.csw {
+  width: 22px; height: 22px; border-radius: 5px;
+  cursor: pointer; border: 2.5px solid transparent;
+  transition: transform 0.12s;
+}
+.csw:hover { transform: scale(1.2); }
+.csw.sel { border-color: var(--ink); }
+.em-foot {
+  padding: 12px 20px 16px;
+  display: flex; gap: 8px; justify-content: flex-end;
+  border-top: 1px solid var(--border-lt);
+}
+.em-btn {
+  padding: 7px 20px; border-radius: 7px;
+  font-size: 12px; font-weight: 700; font-family: var(--font);
+  cursor: pointer; transition: all 0.14s;
+}
+.em-cancel { background: var(--bg); color: var(--ink-2); border: 1.5px solid var(--border); }
+.em-cancel:hover { border-color: var(--ink-3); }
+.em-save { background: var(--ink); color: #fff; border: none; }
+.em-save:hover { background: #2a2a2a; transform: translateY(-1px); }
+
+/* ── VIDEO MODAL ── */
+#video-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.72); backdrop-filter: blur(8px);
+}
+#video-overlay.open { display: flex; animation: fadeIn 0.22s; }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+#video-modal {
+  background: #0C0C18; border-radius: 14px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+  width: min(880px,92vw); overflow: hidden;
+  display: flex; flex-direction: column;
+  animation: modalPop 0.28s var(--ease);
+}
+@keyframes modalPop { from{opacity:0;transform:scale(0.93) translateY(20px);} to{opacity:1;transform:none;} }
+.modal-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 10px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 12px; flex-shrink: 0;
+}
+.modal-title-wrap { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.modal-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--brand);
+  animation: dotPulse 2.4s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%,100%{opacity:1;box-shadow:0 0 4px rgba(226,35,26,0.4);}
+  50%{opacity:0.6;box-shadow:0 0 12px rgba(226,35,26,0.8);}
+}
+.modal-title { font-size: 13px; font-weight: 700; color: #F0F0F0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.modal-file  { font-size: 10px; color: rgba(255,255,255,0.28); flex-shrink: 0; margin-left: 4px; }
+.modal-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.modal-btn {
+  width: 32px; height: 32px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.modal-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.modal-btn-close:hover { background: rgba(226,35,26,0.2); border-color: rgba(226,35,26,0.4); }
+.modal-btn svg { width: 14px; height: 14px; }
+.video-wrap { position: relative; width: 100%; padding-top: 56.25%; background: #000; flex-shrink: 0; }
+.video-wrap video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+.modal-footer {
+  padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.modal-footer-note { font-size: 10px; color: rgba(255,255,255,0.2); }
+.modal-tag {
+  display: inline-flex; align-items: center;
+  padding: 2px 9px; border-radius: 9px;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+  background: var(--brand); color: #fff;
+}
+#video-modal.is-fullscreen {
+  width: 100vw !important; height: 100vh !important;
+  max-width: 100vw; border-radius: 0;
+}
+#video-modal.is-fullscreen .video-wrap { flex: 1 1 auto; padding-top: 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="site-hdr">
+    <div class="hdr-l">
+      <span class="hdr-wm">Lenovo <b>Digitalization</b></span>
+      <span class="hdr-pipe"></span>
+      <span class="hdr-sub">Make Lenovo a AI-native Company</span>
+      <button class="site-edit-btn" onclick="openEM('site-hdr')" title="Edit header text">✏</button>
+    </div>
+    <div class="hdr-r">
+      <button class="h-reset" onclick="confirmReset()">↺ Reset</button>
+      <button class="h-reset" onclick="exportData()">↓ Export</button>
+      <button class="h-reset" onclick="document.getElementById('import-file').click()">↑ Import</button>
+      <input type="file" id="import-file" accept=".json" style="display:none"
+        onchange="importData(this.files[0])" />
+      <button class="h-btn" id="edit-toggle" onclick="toggleEditMode()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        <span id="edit-label">Edit</span>
+      </button>
+      <span class="h-badge">AI Showcase</span>
+    </div>
+  </header>
+
+  <!-- FILTER BAR -->
+  <nav class="f-bar" id="f-bar"></nav>
+
+  <!-- BODY: horizontal L2 columns -->
+  <main class="l2-strip" id="l2-strip"></main>
+
+  <!-- FOOTER -->
+  <footer class="site-ftr">
+    <span class="ftr-note">Lenovo Digitalization Team · AI Showcase · Since March 2026</span>
+    <button class="site-edit-btn site-edit-btn--ftr" onclick="openEM('site-ftr')" title="Edit footer text">✏</button>
+    <span class="ftr-count" id="ftr-count"></span>
+  </footer>
+
+</div>
+
+<!-- LENOVO LOGO — fixed right side -->
+<div class="lenovo-badge">
+  <img
+    src="https://origin-brandworld.lenovo.com/wp-content/uploads/2021/01/03_Logo_01Overview_6B_v-07-768x183.png"
+    alt="Lenovo"
+    height="56"
+  />
+</div>
+
+<!-- EDIT MODAL -->
+<div id="em-overlay" onclick="handleEMOverlay(event)">
+  <div id="em-box">
+    <div class="em-head">
+      <span class="em-title" id="em-title">Edit</span>
+      <span class="em-lv" id="em-lv">—</span>
+      <button class="em-x" onclick="closeEM()">✕</button>
+    </div>
+    <div class="em-body" id="em-body"></div>
+    <div class="em-foot">
+      <button class="em-btn em-cancel" onclick="closeEM()">Cancel</button>
+      <button class="em-btn em-save" onclick="saveEM()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div id="video-overlay" role="dialog" aria-modal="true">
+  <div id="video-modal">
+    <div class="modal-bar">
+      <div class="modal-title-wrap">
+        <div class="modal-dot"></div>
+        <span class="modal-title" id="modal-title-text">Demo Video</span>
+        <span class="modal-file" id="modal-file-text"></span>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="toggleFullscreen()">
+          <svg id="icon-fse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+            <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+          </svg>
+          <svg id="icon-fss" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/>
+            <line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>
+          </svg>
+        </button>
+        <button class="modal-btn modal-btn-close" onclick="closeVideo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="video-wrap">
+      <video id="demo-video" controls preload="metadata" playsinline>Your browser does not support HTML5 video.</video>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-footer-note">Place video files in the same folder as this HTML · ⛶ fullscreen</span>
+      <span class="modal-tag">★ AI Demo</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const DEFAULT_DATA = {
+  root: { name: 'Lenovo Digitalization Showcase' },
+  l2: [{
+    id: 'lgfs', name: 'LGFS', order: 0,
+    l3: [
+      { id: 'lot', name: 'LOT', colorKey: 'blue', l4: [
+        { id:'p1', name:'Automated Bulk Invoice Checker', desc:'AI-built programs scan thousands of invoice pages in one second.', ai:true, demo:'mp4/demo_bulk_invoice_checker.mp4' },
+        { id:'p2', name:'Historical Bundle Price Calculator', desc:'Reconstruct bundle billing prices for any historical period.', ai:true, demo:'mp4/demo_historical_bundle_price_calculator.mp4' },
+        { id:'p3', name:'Migration Data Validator', desc:'Cross-reference multiple tables to identify data discrepancies.', ai:true, demo:'mp4/demo_migration_data_validator.mp4' },
+        { id:'p4', name:'Smart P2P', desc:'AI invoice recognition & processing for OACP, LGAP, Ariba, LSUMP, SDMS.', ai:true, demo:'mp4/demo_smart_p2p.mp4' }
+      ]},
+      { id: 'vrt', name: 'VRT', colorKey: 'purple', l4: [
+        { id:'p5', name:'Web LGFS Quotation Tool', desc:'Built-in algorithm, auto-fetches BondRate, generates PDF quotes.', ai:true, demo:'mp4/demo_web_lgfs_quotation_tool.mp4' },
+        { id:'p6', name:'End-of-Term Buyout Price Estimator', desc:'Automatically calculate buyout prices at lease maturity.', ai:true, demo:'mp4/demo_eot_buyout_price_estimator.mp4' }
+      ]},
+      { id: 'reporting', name: 'Reporting', colorKey: 'amber', l4: [
+        { id:'p7', name:'R.DaaS EoL Dashboard', desc:'Dynamic visualization, export support, mobile inventory intake.', ai:true, demo:'mp4/demo_rdaas_eol_dashboard.mp4' },
+        { id:'p8', name:'Funded Volume Report Data Flow', desc:'Visualize report data sources and structures for rapid issue diagnosis.', ai:true, demo:'mp4/demo_funded_volume_report_dataflow.mp4' }
+      ]}
+    ]
+  }]
+};
+
+function dc(o) { return JSON.parse(JSON.stringify(o)); }
+function uid()  { return '_' + Math.random().toString(36).slice(2, 9); }
+
+let siteTitle = 'Lenovo Digitalization';
+let siteSub   = 'Make Lenovo a AI-native Company';
+let siteFtr   = 'Lenovo Digitalization Team · AI Showcase · Since March 2026';
+
+function applySiteTexts() {
+  document.querySelector('.hdr-wm').textContent = siteTitle;
+  document.querySelector('.hdr-sub').textContent = siteSub;
+  document.querySelector('.ftr-note').textContent = siteFtr;
+}
+
+let treeData;
+function loadData() {
+  try {
+    const s = localStorage.getItem('ssg-v6');
+    treeData = s ? JSON.parse(s) : dc(DEFAULT_DATA);
+  } catch(e) { treeData = dc(DEFAULT_DATA); }
+}
+function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); }
+loadData();
+
+let editMode = false, activeFilter = 'all', cardNums = {};
+
+function buildNums() {
+  const n = {}; let i = 1;
+  treeData.l2.forEach(l2 => l2.l3.forEach(l3 => l3.l4.forEach(l4 => { n[l4.id] = i++; })));
+  cardNums = n;
+}
+
+function render() { buildNums(); applySiteTexts(); renderFilterBar(); renderL2Strip(); renderFooter(); }
+
+function renderFooter() {
+  let total = 0, visible = 0;
+  treeData.l2.forEach(l2 => l2.l3.forEach(l3 => l3.l4.forEach(l4 => {
+    total++;
+    if (activeFilter === 'all' || (activeFilter === 'hasDemo' && l4.demo) || (activeFilter === 'hasStar' && l4.star)) visible++;
+  })));
+  document.getElementById('ftr-count').innerHTML = visible === total
+    ? '<span>' + total + '</span> demos'
+    : '<span>' + visible + '</span> / ' + total + ' demos';
+}
+
+function renderFilterBar() {
+  const bar = document.getElementById('f-bar'); bar.innerHTML = '';
+  bar.appendChild(makeChip('All', 'all', 'all', activeFilter === 'all'));
+  bar.appendChild(makeChip('★ Has Demo', 'hasDemo', 'filter', activeFilter === 'hasDemo'));
+  bar.appendChild(makeChip('★ Starred', 'hasStar', 'filter', activeFilter === 'hasStar'));
+  if (editMode) {
+    bar.appendChild(fsep());
+    const a = el('button', 'add-chip-btn'); a.textContent = '+ Team';
+    a.onclick = () => openEM('l2-new'); bar.appendChild(a);
+  }
+}
+
+function makeChip(label, id, type, active, colorObj) {
+  const btn = el('button', 'f-chip'); btn.textContent = label;
+  if (colorObj) {
+    if (active) btn.style.cssText = 'background:' + colorObj.main + ';border-color:' + colorObj.main + ';color:#fff;';
+    else { btn.style.cssText = 'border-color:' + colorObj.main + '55;color:' + colorObj.main + ';'; btn.onmouseenter = () => btn.style.cssText = 'background:' + colorObj.light + ';border-color:' + colorObj.main + ';color:' + colorObj.main + ';'; btn.onmouseleave = () => btn.style.cssText = 'border-color:' + colorObj.main + '55;color:' + colorObj.main + ';'; }
+  } else { if (active) btn.classList.add('f-chip-active-' + type); }
+  btn.onclick = () => { activeFilter = (active && id !== 'all') ? 'all' : id; render(); };
+  return btn;
+}
+function fsep() { return el('div', 'f-sep'); }
+
+function renderL2Strip() {
+  const strip = document.getElementById('l2-strip'); strip.innerHTML = '';
+  treeData.l2.forEach((l2, i2) => { strip.appendChild(makeL2Col(l2, i2)); });
+  const addBtn = el('button', 'add-l2-cell');
+  addBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Team';
+  addBtn.onclick = () => openEM('l2-new');
+  strip.appendChild(addBtn);
+  setupDragDrop();
+}
+
+function makeL2Col(l2, i2) {
+  const col = el('div', 'l2-col'); col.dataset.i2 = i2;
+  const hdr = el('div', 'l2-hdr');
+  hdr.innerHTML = '<div class="l2-hdr-accent"></div><span class="drag-handle" title="Drag to reorder">☰</span>';
+  const nameEl = el('span', 'l2-hdr-name'); nameEl.textContent = l2.name;
+  hdr.appendChild(nameEl);
+  const hdrCtrl = el('div', 'l2-hdr-ctrl');
+  hdrCtrl.appendChild(mkBtn('✏', () => openEM('l2', i2)));
+  hdrCtrl.appendChild(mkBtn('×', () => { if (confirm('Delete team "' + l2.name + '"?')) { treeData.l2.splice(i2, 1); if (activeFilter === l2.id) activeFilter = 'all'; saveData(); render(); } }, true));
+  hdr.appendChild(hdrCtrl);
+  col.appendChild(hdr);
+  if (l2.l3.length === 0) { const empty = el('div', 'l2-empty'); empty.textContent = editMode ? 'Add a group below' : 'No groups yet'; col.appendChild(empty); }
+  else l2.l3.forEach((l3, i3) => { col.appendChild(makeL3Group(l3, l2, i2, i3)); });
+  const addGrpBtn = el('button', 'l2-add-btn');
+  addGrpBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Group';
+  addGrpBtn.onclick = () => openEM('l3-new', i2);
+  col.appendChild(addGrpBtn);
+  return col;
+}
+
+function makeL3Group(l3, l2, i2, i3) {
+  const c = getC(l3.colorKey);
+  const group = el('div', 'l3-group'); group.dataset.l3 = l3.id;
+  const label = el('div', 'l3-label'); label.style.color = c.main;
+  const dot = el('span', 'l3-label-dot'); dot.style.background = c.main;
+  label.appendChild(dot); label.appendChild(document.createTextNode(l3.name));
+  const editCtrl = el('div', 'l3-label-edit');
+  editCtrl.appendChild(mkL3Btn('✏', () => openEM('l3', i2, i3)));
+  editCtrl.appendChild(mkL3Btn('×', () => { if (confirm('Delete group "' + l3.name + '"?')) { treeData.l2[i2].l3.splice(i3, 1); if (activeFilter === l3.id) activeFilter = 'all'; saveData(); render(); } }, true));
+  label.appendChild(editCtrl); group.appendChild(label);
+  const cards = el('div', 'l3-cards'); cards.dataset.i2 = i2; cards.dataset.i3 = i3;
+  cards.ondragover = e => { if (editMode) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; cards.classList.add('drag-over'); } };
+  cards.ondragleave = () => cards.classList.remove('drag-over');
+  cards.ondrop = e => {
+    if (!editMode) return; e.preventDefault(); cards.classList.remove('drag-over');
+    try {
+      const src = JSON.parse(e.dataTransfer.getData('text/plain'));
+      const [cardData] = treeData.l2[src.i2].l3[src.i3].l4.splice(src.i4, 1);
+      treeData.l2[i2].l3[i3].l4.splice(i4, 0, cardData);
+      saveData(); render();
+    } catch(err) {}
+  };
+  if (l3.l4.length === 0) { const empty = el('div', 'l2-empty'); empty.textContent = '—'; cards.appendChild(empty); }
+  else l3.l4.forEach((l4, i4) => {
+    const show = activeFilter === 'all' || (activeFilter === 'hasDemo' && l4.demo) || (activeFilter === 'hasStar' && l4.star);
+    const card = makeCard(l4, l2, i2, i3, i4, c);
+    if (!show) card.style.display = 'none';
+    cards.appendChild(card);
+  });
+  const addCardBtn = el('button', 'l2-add-btn');
+  addCardBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Card';
+  addCardBtn.onclick = () => openEM('l4-new', i2, i3);
+  cards.appendChild(addCardBtn); group.appendChild(cards); return group;
+}
+
+function makeCard(l4, l2, i2, i3, i4, c) {
+  const card = el('div', 'proj-card'); card.dataset.i2 = i2; card.dataset.i3 = i3; card.dataset.i4 = i4;
+  card.style.borderLeftColor = c.main;
+  if (editMode) { card.draggable = true; card.ondragstart = e => { card.classList.add('dragging'); e.dataTransfer.setData('text/plain', JSON.stringify({ i2, i3, i4 })); e.dataTransfer.effectAllowed = 'move'; }; card.ondragend = () => card.classList.remove('dragging'); }
+  const top = el('div', 'card-top');
+  const numEl = el('span', 'card-num'); numEl.textContent = String(cardNums[l4.id] || '?').padStart(2, '0'); numEl.style.color = c.main;
+  top.appendChild(numEl);
+  const row = el('div', 'card-row');
+  const nameEl = el('span', 'card-name'); nameEl.textContent = l4.name; row.appendChild(nameEl);
+  if (l4.star) { const s = el('span', 'star-tag'); s.textContent = '★'; s.title = 'Best Solution'; row.appendChild(s); }
+  if (l4.ai) { const t = el('span', 'ai-tag'); t.textContent = 'AI'; row.appendChild(t); }
+  if (l4.costSaving) { const m = el('span', 'metric-tag metric-cost'); m.textContent = 'US$ ' + l4.costSaving; row.appendChild(m); }
+  if (l4.efficiency) { const m = el('span', 'metric-tag metric-eff'); m.textContent = l4.efficiency + '%'; row.appendChild(m); }
+  top.appendChild(row); card.appendChild(top);
+  if (l4.desc) {
+    const d = el('div', 'card-desc clamped'); d.textContent = l4.desc; card.appendChild(d);
+    requestAnimationFrame(() => {
+      if (d.scrollHeight > d.clientHeight) {
+        const moreBtn = el('span', 'card-more'); moreBtn.textContent = 'more ▾';
+        moreBtn.onclick = e => { e.stopPropagation(); const expanded = d.classList.toggle('clamped'); moreBtn.textContent = expanded ? 'more ▾' : 'less ▴'; moreBtn.classList.toggle('expanded', !expanded); };
+        d.appendChild(moreBtn);
+      }
+    });
+  }
+  if (l4.demo) {
+    const demoRow = el('div', 'card-demo');
+    const btn = el('button', 'btn-demo'); btn.style.color = c.main; btn.style.borderColor = c.main + '55';
+    btn.onmouseenter = () => { btn.style.background = c.light; btn.style.borderColor = c.main; };
+    btn.onmouseleave = () => { btn.style.background = ''; btn.style.borderColor = c.main + '55'; };
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><polygon points="10,8 16,12 10,16"/></svg>Demo';
+    btn.onclick = () => openVideo(l4.demo, l4.name);
+    demoRow.appendChild(btn); card.appendChild(demoRow);
+  }
+  const ctrl = el('div', 'card-ctrl');
+  ctrl.appendChild(mkCbtn('✏', () => openEM('l4', i2, i3, i4)));
+  ctrl.appendChild(mkCbtn('×', () => { if (confirm('Delete "' + l4.name + '"?')) { treeData.l2[i2].l3[i3].l4.splice(i4, 1); saveData(); render(); } }, true));
+  card.appendChild(ctrl); return card;
+}
+
+function el(tag, cls) { const e = document.createElement(tag); if (cls) e.className = cls; return e; }
+function mkBtn(txt, fn, isDel) { const b = el('button', 'l2-hdr-btn' + (isDel ? ' del' : '')); b.textContent = txt; b.onclick = e => { e.stopPropagation(); fn(); }; return b; }
+function mkL3Btn(txt, fn, isDel) { const b = el('button', 'l3-edit-btn' + (isDel ? ' del' : '')); b.textContent = txt; b.onclick = e => { e.stopPropagation(); fn(); }; return b; }
+function mkCbtn(txt, fn, isDel) { const b = el('button', 'cbtn' + (isDel ? ' del' : '')); b.textContent = txt; b.onclick = e => { e.stopPropagation(); fn(); }; return b; }
+
+let dragSrc = null, dragSrcIdx = -1;
+function setupDragDrop() {
+  if (!editMode) return;
+  document.querySelectorAll('.l2-col').forEach(col => {
+    col.draggable = true;
+    col.ondragstart = e => { dragSrc = col; dragSrcIdx = parseInt(col.dataset.i2); col.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; };
+    col.ondragend = () => { col.classList.remove('dragging'); document.querySelectorAll('.l2-col').forEach(c => c.classList.remove('drag-over')); dragSrc = null; dragSrcIdx = -1; };
+    col.ondragover = e => { e.preventDefault(); if (col === dragSrc) return; col.classList.add('drag-over'); };
+    col.ondragleave = () => col.classList.remove('drag-over');
+    col.ondrop = e => { e.preventDefault(); col.classList.remove('drag-over'); if (col === dragSrc) return; const dstIdx = parseInt(col.dataset.i2); const [moved] = treeData.l2.splice(dragSrcIdx, 1); treeData.l2.splice(dstIdx, 0, moved); saveData(); render(); };
+  });
+}
+
+function toggleEditMode() { editMode = !editMode; document.body.classList.toggle('edit-mode', editMode); document.getElementById('edit-toggle').classList.toggle('active', editMode); document.getElementById('edit-label').textContent = editMode ? 'Done' : 'Edit'; render(); }
+function confirmReset() { if (confirm('Reset all data to defaults?')) { treeData = dc(DEFAULT_DATA); activeFilter = 'all'; saveData(); render(); } }
+function exportData() { const blob = new Blob([JSON.stringify(treeData, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'ssg-showcase-' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); URL.revokeObjectURL(url); }
+function importData(file) { if (!file) return; const reader = new FileReader(); reader.onload = e => { try { const data = JSON.parse(e.target.result); if (!data.l2 || !Array.isArray(data.l2)) throw new Error('Invalid format'); treeData = data; siteTitle = 'Lenovo Digitalization'; siteSub = 'Make Lenovo a AI-native Company'; siteFtr = 'Lenovo Digitalization Team · AI Showcase · Since March 2026'; saveData(); render(); alert('Import successful — ' + data.l2.length + ' team(s) loaded.'); } catch(err) { alert('Import failed: ' + err.message); } }; reader.readAsText(file); document.getElementById('import-file').value = ''; }
+
+/* PALETTE */
+const COLORS = [
+  { key:'red', main:'#E2231A', light:'#FFF0EF' },
+  { key:'blue', main:'#0066CC', light:'#EBF3FF' },
+  { key:'purple', main:'#7B2FBE', light:'#F3E8FF' },
+  { key:'green', main:'#227A15', light:'#E8F5E9' },
+  { key:'orange', main:'#C24F0E', light:'#FFF3E0' },
+  { key:'teal', main:'#007C73', light:'#E0F2F1' },
+  { key:'cyan', main:'#008BCE', light:'#E1F5FE' },
+  { key:'pink', main:'#B0125B', light:'#FCE4EC' },
+  { key:'gray', main:'#555555', light:'#F5F5F5' },
+];
+function getC(key) { return COLORS.find(c => c.key === key) || COLORS[0]; }
+
+/* EDIT MODAL */
+let emCtx = {};
+function openEM(type, i2, i3, i4) {
+  emCtx = { type, i2, i3, i4 };
+  const body = document.getElementById('em-body'); const title = document.getElementById('em-title'); const lv = document.getElementById('em-lv');
+  body.innerHTML = '';
+  if (type === 'l2') { title.textContent = 'Edit Team'; lv.textContent = 'Team'; body.appendChild(tf('name', 'Team Name', treeData.l2[i2].name)); }
+  else if (type === 'l2-new') { title.textContent = 'Add Team'; lv.textContent = 'Team'; body.appendChild(tf('name', 'Team Name', '')); }
+  else if (type === 'l3') { const l3 = treeData.l2[i2].l3[i3]; title.textContent = 'Edit Group'; lv.textContent = 'Group'; body.appendChild(tf('name', 'Group Name', l3.name)); body.appendChild(cf('colorKey', l3.colorKey)); }
+  else if (type === 'l3-new') { title.textContent = 'Add Group'; lv.textContent = 'Group'; body.appendChild(l2sel('l2pick', 'Add to Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(tf('name', 'Group Name', '')); body.appendChild(cf('colorKey', 'blue')); }
+  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; title.textContent = 'Edit Card'; lv.textContent = 'Card'; body.appendChild(tf('name', 'Project Name', l4.name)); body.appendChild(taf('desc', 'Description', l4.desc || '')); body.appendChild(tg('ai', 'AI Tag', !!l4.ai)); body.appendChild(tf('demo', 'Demo Video Filename', l4.demo || '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', l4.costSaving, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', l4.efficiency, '')); body.appendChild(tg('star', '★ Star / Best Solution', !!l4.star)); }
+  else if (type === 'l4-new') { title.textContent = 'Add Card'; lv.textContent = 'Card'; body.appendChild(l2sel('l2pick', 'Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(l3sel('l3pick', 'Group', i2 !== undefined ? treeData.l2[i2].id : '', i3 !== undefined ? treeData.l2[i2].l3[i3].id : '')); body.appendChild(tf('name', 'Project Name', '')); body.appendChild(taf('desc', 'Description', '')); body.appendChild(tg('ai', 'AI Tag', true)); body.appendChild(tf('demo', 'Demo Video Filename', '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', undefined, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', undefined, '')); body.appendChild(tg('star', '★ Star / Best Solution', false)); }
+  else if (type === 'site-hdr') { title.textContent = 'Edit Header'; lv.textContent = 'Site'; body.appendChild(tf('hdrTitle', 'Left Text', siteTitle)); body.appendChild(tf('hdrSub', 'Right Text (subtitle)', siteSub)); }
+  else if (type === 'site-ftr') { title.textContent = 'Edit Footer'; lv.textContent = 'Site'; body.appendChild(tf('ftrNote', 'Footer Text', siteFtr)); }
+  document.getElementById('em-overlay').classList.add('open');
+}
+
+function tf(id, label, val) { const w = el('div', 'em-field'); const lb = document.createElement('label'); lb.textContent = label; const inp = document.createElement('input'); inp.type = 'text'; inp.id = 'em-' + id; inp.value = val || ''; w.appendChild(lb); w.appendChild(inp); return w; }
+function tn(id, label, val, prefix) { const w = el('div', 'em-field'); const lb = document.createElement('label'); lb.textContent = label; const row = el('div', 'em-row'); if (prefix) { const p = el('span'); p.textContent = prefix; p.style.color = 'var(--ink-3)'; p.style.fontSize = '12px'; row.appendChild(p); } const inp = document.createElement('input'); inp.type = 'number'; inp.id = 'em-' + id; inp.value = (val !== undefined && val !== null) ? val : ''; inp.min = '0'; inp.step = 'any'; inp.style.width = '100px'; inp.style.flex = '0 0 auto'; row.appendChild(inp); w.appendChild(lb); w.appendChild(row); return w; }
+function taf(id, label, val) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const ta = document.createElement('textarea'); ta.id = 'em-' + id; ta.value = val || ''; w.appendChild(ta); return w; }
+function tg(id, label, val) { const w = el('div', 'em-field'); const row = el('div', 'em-row'); const lb = el('span', 'em-row-label'); lb.textContent = label; const btn = el('button', 'tsw' + (val ? ' on' : '')); btn.id = 'em-' + id; btn.dataset.v = val ? '1' : '0'; btn.onclick = () => { const on = btn.dataset.v === '1'; btn.dataset.v = on ? '0' : '1'; btn.classList.toggle('on', !on); }; row.appendChild(lb); row.appendChild(btn); w.appendChild(row); return w; }
+function cf(id, sel) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = 'Color'; const row = el('div', 'color-row'); row.id = 'em-' + id; COLORS.forEach(c => { const sw = el('button', 'csw' + (c.key === sel ? ' sel' : '')); sw.style.background = c.main; sw.dataset.c = c.key; sw.title = c.key; sw.onclick = e => { e.preventDefault(); row.querySelectorAll('.csw').forEach(s => s.classList.remove('sel')); sw.classList.add('sel'); }; row.appendChild(sw); }); w.appendChild(row); return w; }
+function l2sel(id, label, defaultL2Id) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const sel = document.createElement('select'); sel.id = 'em-' + id; treeData.l2.forEach(l2 => { const o = document.createElement('option'); o.value = l2.id; o.textContent = l2.name; if (l2.id === defaultL2Id) o.selected = true; sel.appendChild(o); }); w.appendChild(sel); return w; }
+function l3sel(id, label, l2id, defaultL3Id) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const sel = document.createElement('select'); sel.id = 'em-' + id; const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) team.l3.forEach(l3 => { const o = document.createElement('option'); o.value = l3.id; o.textContent = l3.name; if (l3.id === defaultL3Id) o.selected = true; sel.appendChild(o); }); w.appendChild(sel); return w; }
+
+function gf(id) { const e = document.getElementById('em-' + id); if (!e) return ''; if (e.classList.contains('tsw')) return e.dataset.v === '1'; if (e.classList.contains('color-row')) { const s = e.querySelector('.csw.sel'); return s ? s.dataset.c : 'blue'; } if (e.type === 'number') return e.value === '' ? null : e.value; return e.value.trim(); }
+
+function saveEM() {
+  const { type, i2, i3, i4 } = emCtx;
+  if (type === 'l2') { const n = gf('name'); if (n) treeData.l2[i2].name = n; }
+  else if (type === 'l2-new') { const n = gf('name'); if (n) treeData.l2.push({ id: uid(), name: n, l3: [] }); }
+  else if (type === 'l3') { const l3 = treeData.l2[i2].l3[i3]; const n = gf('name'); if (n) l3.name = n; l3.colorKey = gf('colorKey') || l3.colorKey; }
+  else if (type === 'l3-new') { const n = gf('name'); const l2id = gf('l2pick'); if (n) { const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) team.l3.push({ id: uid(), name: n, colorKey: gf('colorKey') || 'blue', l4: [] }); } }
+  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; const n = gf('name'); if (n) l4.name = n; l4.desc = gf('desc'); l4.ai = gf('ai'); l4.demo = gf('demo'); l4.star = gf('star'); l4.costSaving = gf('costSaving') || null; l4.efficiency = gf('efficiency') || null; }
+  else if (type === 'l4-new') { const n = gf('name'); if (!n) { closeEM(); return; } const l2id = gf('l2pick'); const l3id = gf('l3pick'); const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) { const grp = team.l3.find(g => g.id === l3id) || team.l3[0]; if (grp) grp.l4.push({ id: uid(), name: n, desc: gf('desc'), ai: gf('ai'), demo: gf('demo'), star: gf('star'), costSaving: gf('costSaving') || null, efficiency: gf('efficiency') || null }); } }
+  else if (type === 'site-hdr') { const t = gf('hdrTitle'); if (t) siteTitle = t; const s = gf('hdrSub'); if (s) siteSub = s; }
+  else if (type === 'site-ftr') { const f = gf('ftrNote'); if (f) siteFtr = f; }
+  saveData(); closeEM(); render();
+}
+
+function closeEM() { document.getElementById('em-overlay').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (videoOpen && e.key === 'Escape') { closeVideo(); return; } if (e.key === 'Escape') closeEM(); });
+document.getElementById('em-overlay').addEventListener('click', e => { if (e.target === document.getElementById('em-overlay')) closeEM(); });
+
+/* VIDEO MODAL */
+let videoOpen = false, isFSMode = false;
+const vOverlay = document.getElementById('video-overlay');
+const vModal = document.getElementById('video-modal');
+const vEl = document.getElementById('demo-video');
+const vTitle = document.getElementById('modal-title-text');
+const vFile = document.getElementById('modal-file-text');
+
+function openVideo(f, t) {
+  // Auto-prepend mp4/ if path has no folder (backward-compat with old data)
+  const src = f.includes('/') ? f : 'mp4/' + f;
+  vEl.src = src; vTitle.textContent = t; vFile.textContent = '📁 ' + f; vOverlay.classList.add('open'); videoOpen = true; vEl.load(); vEl.play().catch(() => {});
+}
+function closeVideo() { vEl.pause(); vEl.src = ''; vOverlay.classList.remove('open'); videoOpen = false; if (isFSMode) { vModal.classList.remove('is-fullscreen'); isFSMode = false; } if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); }
+function toggleFullscreen() { if (!isFSMode) { if (vModal.requestFullscreen) vModal.requestFullscreen().then(() => { isFSMode = true; vModal.classList.add('is-fullscreen'); }).catch(() => { isFSMode = true; vModal.classList.add('is-fullscreen'); }); else { isFSMode = true; vModal.classList.add('is-fullscreen'); } } else { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); isFSMode = false; vModal.classList.remove('is-fullscreen'); } }
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && isFSMode) { isFSMode = false; vModal.classList.remove('is-fullscreen'); } });
+vOverlay.addEventListener('click', e => { if (e.target === vOverlay) closeVideo(); });
+
+render();
+
+</script>
+</body>
+</html>

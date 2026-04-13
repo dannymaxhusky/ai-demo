@@ -4,6 +4,63 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lenovo AI Showcase · Make Lenovo AI-native</title>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"></script>
+<!-- TODO: Replace firebaseConfig below with your own project config from console.firebase.google.com -->
+<script>
+window.__FIREBASE_CONFIG__ = {
+  apiKey: "AIzaSy_REPLACE_ME",
+  authDomain: "REPLACE_ME.firebaseapp.com",
+  projectId: "REPLACE_ME",
+  storageBucket: "REPLACE_ME.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:REPLACE_ME"
+};
+(function() {
+  try {
+    firebase.initializeApp(window.__FIREBASE_CONFIG__);
+    const db = firebase.firestore();
+    // Enable offline persistence
+    db.enablePersistence().catch(() => {});
+    window.__Store__ = {
+      ready: false,
+      data: null,
+      unsub: null,
+      init: function(onFirst) {
+        var self = this;
+        var docRef = db.collection('ssg').doc('main');
+        this.unsub = docRef.onSnapshot(function(snap) {
+          if (snap.exists) {
+            self.data = snap.data();
+            self.ready = true;
+            window.treeData = self.data.treeData || dc(window.DEFAULT_DATA);
+            window.siteTitle = self.data.siteTitle || 'Lenovo Digitalization';
+            window.siteSub   = self.data.siteSub   || 'Make Lenovo a AI-native Company';
+            window.siteFtr   = self.data.siteFtr   || 'Lenovo Digitalization Team · AI Showcase · Since March 2026';
+            window.saveData = function() { self.saveAll(); };
+          } else {
+            // First run — seed default data
+            var seed = { treeData: dc(window.DEFAULT_DATA), siteTitle: 'Lenovo Digitalization', siteSub: 'Make Lenovo a AI-native Company', siteFtr: 'Lenovo Digitalization Team · AI Showcase · Since March 2026' };
+            docRef.set(seed).then(function() {});
+          }
+          if (onFirst) onFirst();
+        });
+      },
+      saveAll: function() {
+        if (!this.ready) return;
+        db.collection('ssg').doc('main').set({
+          treeData: window.treeData,
+          siteTitle: window.siteTitle,
+          siteSub:   window.siteSub,
+          siteFtr:   window.siteFtr
+        }, { merge: true }).catch(function() {});
+      },
+      destroy: function() { if (this.unsub) this.unsub(); }
+    };
+  } catch(e) { console.warn('Firebase init failed, using localStorage only:', e); }
+})();
+</script>
 <style>
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -849,7 +906,8 @@ function applySiteTexts() {
   document.querySelector('.ftr-note').textContent = siteFtr;
 }
 
-let treeData;
+// ── Data Loading (localStorage first, then Firestore when ready) ──
+let treeData = dc(DEFAULT_DATA); // show defaults immediately; Firestore will update when ready
 function loadData() {
   try {
     const s = localStorage.getItem('ssg-v6');
@@ -857,9 +915,23 @@ function loadData() {
   } catch(e) { treeData = dc(DEFAULT_DATA); }
 }
 function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); }
-loadData();
 
-let editMode = false, activeFilter = 'all', cardNums = {};
+// If Firebase is configured, use Firestore for real-time cloud sync
+if (window.__Store__) {
+  window.__Store__.init(function() {
+    // Firestore data arrived — sync local variables with Store data
+    treeData  = window.__Store__.data.treeData  || dc(DEFAULT_DATA);
+    siteTitle = window.__Store__.data.siteTitle || 'Lenovo Digitalization';
+    siteSub   = window.__Store__.data.siteSub   || 'Make Lenovo a AI-native Company';
+    siteFtr   = window.__Store__.data.siteFtr   || 'Lenovo Digitalization Team · AI Showcase · Since March 2026';
+    saveData(); // keep localStorage in sync
+    render();
+  });
+  // Override saveData so all saves go to Firestore (then localStorage)
+  window.saveData = function() { window.__Store__.saveAll(); };
+} else {
+  loadData();
+}
 
 function buildNums() {
   const n = {}; let i = 1;

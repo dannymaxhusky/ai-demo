@@ -1240,6 +1240,7 @@ function loadData() {
 }
 function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); }
 loadData();
+let editMode = false, activeFilter = 'all', cardNums = {};
 
 function buildNums() {
   const n = {}; let i = 1;

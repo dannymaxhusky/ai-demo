@@ -4,63 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lenovo AI Showcase · Make Lenovo AI-native</title>
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"></script>
-<!-- TODO: Replace firebaseConfig below with your own project config from console.firebase.google.com -->
-<script>
-window.__FIREBASE_CONFIG__ = {
-  apiKey: "AIzaSy_REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:REPLACE_ME"
-};
-(function() {
-  try {
-    firebase.initializeApp(window.__FIREBASE_CONFIG__);
-    const db = firebase.firestore();
-    // Enable offline persistence
-    db.enablePersistence().catch(() => {});
-    window.__Store__ = {
-      ready: false,
-      data: null,
-      unsub: null,
-      init: function(onFirst) {
-        var self = this;
-        var docRef = db.collection('ssg').doc('main');
-        this.unsub = docRef.onSnapshot(function(snap) {
-          if (snap.exists) {
-            self.data = snap.data();
-            self.ready = true;
-            window.treeData = self.data.treeData || dc(window.DEFAULT_DATA);
-            window.siteTitle = self.data.siteTitle || 'Lenovo Digitalization';
-            window.siteSub   = self.data.siteSub   || 'Make Lenovo a AI-native Company';
-            window.siteFtr   = self.data.siteFtr   || 'Lenovo Digitalization Team · AI Showcase · Since March 2026';
-            window.saveData = function() { self.saveAll(); };
-          } else {
-            // First run — seed default data
-            var seed = { treeData: dc(window.DEFAULT_DATA), siteTitle: 'Lenovo Digitalization', siteSub: 'Make Lenovo a AI-native Company', siteFtr: 'Lenovo Digitalization Team · AI Showcase · Since March 2026' };
-            docRef.set(seed).then(function() {});
-          }
-          if (onFirst) onFirst();
-        });
-      },
-      saveAll: function() {
-        if (!this.ready) return;
-        db.collection('ssg').doc('main').set({
-          treeData: window.treeData,
-          siteTitle: window.siteTitle,
-          siteSub:   window.siteSub,
-          siteFtr:   window.siteFtr
-        }, { merge: true }).catch(function() {});
-      },
-      destroy: function() { if (this.unsub) this.unsub(); }
-    };
-  } catch(e) { console.warn('Firebase init failed, using localStorage only:', e); }
-})();
-</script>
 <style>
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -775,6 +718,7 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
     </div>
     <div class="hdr-r">
       <button class="h-reset" onclick="confirmReset()">↺ Reset</button>
+      <button class="h-reset" type="button" onclick="exportData()">↓ Export</button>
       <button class="h-reset" type="button" onclick="document.getElementById('import-file').click()">↑ Import</button>
       <input type="file" id="import-file" accept=".json" style="display:none"
         onchange="importData(this.files[0])" />
@@ -906,8 +850,7 @@ function applySiteTexts() {
   document.querySelector('.ftr-note').textContent = siteFtr;
 }
 
-// ── Data Loading (localStorage first, then Firestore when ready) ──
-let treeData = dc(DEFAULT_DATA); // show defaults immediately; Firestore will update when ready
+let treeData;
 function loadData() {
   try {
     const s = localStorage.getItem('ssg-v6');
@@ -915,23 +858,7 @@ function loadData() {
   } catch(e) { treeData = dc(DEFAULT_DATA); }
 }
 function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); }
-
-// If Firebase is configured, use Firestore for real-time cloud sync
-if (window.__Store__) {
-  window.__Store__.init(function() {
-    // Firestore data arrived — sync local variables with Store data
-    treeData  = window.__Store__.data.treeData  || dc(DEFAULT_DATA);
-    siteTitle = window.__Store__.data.siteTitle || 'Lenovo Digitalization';
-    siteSub   = window.__Store__.data.siteSub   || 'Make Lenovo a AI-native Company';
-    siteFtr   = window.__Store__.data.siteFtr   || 'Lenovo Digitalization Team · AI Showcase · Since March 2026';
-    saveData(); // keep localStorage in sync
-    render();
-  });
-  // Override saveData so all saves go to Firestore (then localStorage)
-  window.saveData = function() { window.__Store__.saveAll(); };
-} else {
-  loadData();
-}
+loadData();
 
 function buildNums() {
   const n = {}; let i = 1;
@@ -1099,6 +1026,37 @@ function setupDragDrop() {
 
 function toggleEditMode() { editMode = !editMode; document.body.classList.toggle('edit-mode', editMode); document.getElementById('edit-toggle').classList.toggle('active', editMode); document.getElementById('edit-label').textContent = editMode ? 'Done' : 'Edit'; render(); }
 function confirmReset() { if (confirm('Reset all data to defaults?')) { treeData = dc(DEFAULT_DATA); activeFilter = 'all'; saveData(); render(); } }
+/* ── Export: bake current data into HTML, download updated file ── */
+function exportData() {
+  try {
+    // Build new DEFAULT_DATA string from current localStorage state
+    var exportObj = {
+      root: treeData.root,
+      l2: treeData.l2,
+      siteTitle: siteTitle,
+      siteSub: siteSub,
+      siteFtr: siteFtr
+    };
+    var newDefault = JSON.stringify(exportObj, null, 2);
+    // Match the entire DEFAULT_DATA block (multi-line object)
+    var re = /const DEFAULT_DATA = \{[\s\S]*?\n};\s*\n/m;
+    var src = document.documentElement.outerHTML;
+    if (!re.test(src)) { alert('DEFAULT_DATA block not found in page source.'); return; }
+    var replacement = 'const DEFAULT_DATA = ' + newDefault + ';\n';
+    var newSrc = src.replace(re, replacement);
+    if (newSrc === src) { alert('Failed to replace DEFAULT_DATA.'); return; }
+    var blob = new Blob([newSrc], { type: 'text/html' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'SSG_Showcase.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  } catch(err) {
+    alert('Export failed: ' + err.message);
+  }
+}
 function importData(file) {
   if (!file) return;
   const reader = new FileReader();
@@ -1107,8 +1065,10 @@ function importData(file) {
       const data = JSON.parse(e.target.result);
       if (!data.l2 || !Array.isArray(data.l2)) throw new Error('Invalid format');
       treeData = data;
-      siteTitle = 'Lenovo Digitalization'; siteSub = 'Make Lenovo a AI-native Company';
-      siteFtr = 'Lenovo Digitalization Team · AI Showcase · Since March 2026';
+      // Also import site texts if present in JSON
+      if (data.siteTitle !== undefined) siteTitle = data.siteTitle;
+      if (data.siteSub !== undefined) siteSub = data.siteSub;
+      if (data.siteFtr !== undefined) siteFtr = data.siteFtr;
       saveData(); render();
       alert('Import successful — ' + data.l2.length + ' team(s) loaded.');
     } catch(err) { alert('Import failed: ' + err.message); }

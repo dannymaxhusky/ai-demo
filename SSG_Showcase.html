@@ -1028,8 +1028,42 @@ function setupDragDrop() {
 
 function toggleEditMode() { editMode = !editMode; document.body.classList.toggle('edit-mode', editMode); document.getElementById('edit-toggle').classList.toggle('active', editMode); document.getElementById('edit-label').textContent = editMode ? 'Done' : 'Edit'; render(); }
 function confirmReset() { if (confirm('Reset all data to defaults?')) { treeData = dc(DEFAULT_DATA); activeFilter = 'all'; saveData(); render(); } }
-function exportData() { const blob = new Blob([JSON.stringify(treeData, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'ssg-showcase-' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); URL.revokeObjectURL(url); }
-function importData(file) { if (!file) return; const reader = new FileReader(); reader.onload = e => { try { const data = JSON.parse(e.target.result); if (!data.l2 || !Array.isArray(data.l2)) throw new Error('Invalid format'); treeData = data; siteTitle = 'Lenovo Digitalization'; siteSub = 'Make Lenovo a AI-native Company'; siteFtr = 'Lenovo Digitalization Team · AI Showcase · Since March 2026'; saveData(); render(); alert('Import successful — ' + data.l2.length + ' team(s) loaded.'); } catch(err) { alert('Import failed: ' + err.message); } }; reader.readAsText(file); document.getElementById('import-file').value = ''; }
+/* ── Save data into HTML file (for GitHub sync) ── */
+function exportData() {
+  var newSrc = 'const DEFAULT_DATA = ' + JSON.stringify(treeData, null, 2) + ';';
+  var re = /const DEFAULT_DATA = [\s\S]*?^};\s*\nlet siteTitle/m;
+  if (!re.test(document.documentElement.outerHTML)) { alert('DEFAULT_DATA block not found.'); return; }
+  var newHtml = document.documentElement.outerHTML.replace(re, newSrc + '\nlet siteTitle');
+  if (window.showSaveFilePicker) {
+    window.showSaveFilePicker({ suggestedName: 'SSG_Showcase.html' })
+      .then(function(h) { return h.createWritable(); })
+      .then(function(w) { w.write(newHtml); w.close(); alert('Saved! Commit and push to GitHub.'); })
+      .catch(function() {});
+  } else {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([newHtml], { type: 'text/html' }));
+    a.download = 'SSG_Showcase.html'; a.click();
+    URL.revokeObjectURL(a.href);
+    alert('Downloaded. Replace your local HTML file, then commit to GitHub.');
+  }
+}
+function importData(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.l2 || !Array.isArray(data.l2)) throw new Error('Invalid format');
+      treeData = data;
+      siteTitle = 'Lenovo Digitalization'; siteSub = 'Make Lenovo a AI-native Company';
+      siteFtr = 'Lenovo Digitalization Team · AI Showcase · Since March 2026';
+      saveData(); render();
+      alert('Import successful — ' + data.l2.length + ' team(s) loaded.');
+    } catch(err) { alert('Import failed: ' + err.message); }
+  };
+  reader.readAsText(file);
+  document.getElementById('import-file').value = '';
+}
 
 /* PALETTE */
 const COLORS = [

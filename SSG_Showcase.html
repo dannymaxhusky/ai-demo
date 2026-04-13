@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <title>Lenovo AI Showcase · Make Lenovo AI-native</title>
 <style>
 /* ── RESET ── */
@@ -1225,8 +1228,15 @@ let treeData;
 function loadData() {
   try {
     const s = localStorage.getItem('ssg-v6');
+    if (s) {
+      try { JSON.parse(s); } catch(e) { localStorage.removeItem('ssg-v6'); s = null; }
+    }
     treeData = s ? JSON.parse(s) : dc(DEFAULT_DATA);
-  } catch(e) { treeData = dc(DEFAULT_DATA); }
+    if (!treeData || !Array.isArray(treeData.l2)) {
+      localStorage.removeItem('ssg-v6');
+      treeData = dc(DEFAULT_DATA);
+    }
+  } catch(e) { localStorage.removeItem('ssg-v6'); treeData = dc(DEFAULT_DATA); }
 }
 function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); }
 loadData();

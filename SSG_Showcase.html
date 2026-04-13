@@ -718,7 +718,6 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
     </div>
     <div class="hdr-r">
       <button class="h-reset" onclick="confirmReset()">↺ Reset</button>
-      <button class="h-reset" type="button" onclick="exportData()">↓ Export</button>
       <button class="h-reset" type="button" onclick="document.getElementById('import-file').click()">↑ Import</button>
       <input type="file" id="import-file" accept=".json" style="display:none"
         onchange="importData(this.files[0])" />
@@ -1028,37 +1027,6 @@ function setupDragDrop() {
 
 function toggleEditMode() { editMode = !editMode; document.body.classList.toggle('edit-mode', editMode); document.getElementById('edit-toggle').classList.toggle('active', editMode); document.getElementById('edit-label').textContent = editMode ? 'Done' : 'Edit'; render(); }
 function confirmReset() { if (confirm('Reset all data to defaults?')) { treeData = dc(DEFAULT_DATA); activeFilter = 'all'; saveData(); render(); } }
-/* ── Save data into HTML file (for GitHub sync) ── */
-function exportData() {
-  try {
-    var newSrc = 'const DEFAULT_DATA = ' + JSON.stringify(treeData, null, 2) + ';';
-    var re = /const DEFAULT_DATA = [\s\S]*?^};\s*\nlet siteTitle/m;
-    if (!re.test(document.documentElement.outerHTML)) { alert('DEFAULT_DATA block not found. Please open the HTML file directly (not via Netlify URL) to export.'); return; }
-    var newHtml = document.documentElement.outerHTML.replace(re, newSrc + '\nlet siteTitle');
-
-    // Try direct file write (Chrome/Edge with File System Access API)
-    if (window.showSaveFilePicker) {
-      window.showSaveFilePicker({ suggestedName: 'SSG_Showcase.html', types: [{ description: 'HTML', accept: { 'text/html': ['.html'] } }] })
-        .then(function(h) { return h.createWritable(); })
-        .then(function(w) { w.write(newHtml); w.close(); alert('File saved! Commit and push SSG_Showcase.html to GitHub to sync.'); })
-        .catch(function(err) {
-          if (err.name !== 'AbortError') triggerDownload(newHtml); // fallback on error
-        });
-    } else {
-      triggerDownload(newHtml);
-    }
-  } catch(err) {
-    alert('Export error: ' + err.message);
-  }
-}
-function triggerDownload(newHtml) {
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([newHtml], { type: 'text/html' }));
-  a.download = 'SSG_Showcase.html';
-  a.click();
-  URL.revokeObjectURL(a.href);
-  alert('Downloaded SSG_Showcase.html — replace your local file, then commit to GitHub to sync across all devices.');
-}
 function importData(file) {
   if (!file) return;
   const reader = new FileReader();

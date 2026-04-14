@@ -217,6 +217,23 @@ body.edit-mode .h-reset { display: inline-flex; }
 .f-chip-active-all,
 .f-chip-active-team { background: var(--ink) !important; border-color: var(--ink) !important; color: #fff !important; }
 
+/* AI Tag Legend */
+.f-legend {
+  margin-left: auto; flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px;
+  padding-left: 12px; border-left: 1px solid var(--border);
+}
+.f-legend-item {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--ink-3); white-space: nowrap;
+}
+.f-legend-dot {
+  width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0;
+}
+.f-legend-dot.blue  { background: #3B82F6; }
+.f-legend-dot.green { background: #22C55E; }
+.f-legend-dot.red   { background: #EF4444; }
+
 .chip-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
 .chip-ctrl {
   display: none; position: absolute; top: -10px; right: -8px;
@@ -411,8 +428,15 @@ body.edit-mode .proj-card.dragging { opacity: 0.4; transform: rotate(1deg) scale
   flex-shrink: 0; display: inline-flex; align-items: center;
   padding: 2px 6px; border-radius: 4px;
   font-size: 7.5px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
-  background: var(--brand); color: #fff;
+  background: var(--brand); color: #fff; cursor: default;
 }
+body.edit-mode .ai-tag.ai-blue   { cursor: pointer; }
+body.edit-mode .ai-tag.ai-green  { cursor: pointer; }
+body.edit-mode .ai-tag.ai-red    { cursor: pointer; }
+body.edit-mode .ai-tag.ai-none   { cursor: pointer; border: 1.5px dashed var(--border); background: transparent; color: var(--ink-3); }
+.ai-blue  { background: #3B82F6; }
+.ai-green { background: #22C55E; }
+.ai-red   { background: #EF4444; }
 .star-tag {
   flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
   width: 17px; height: 17px; border-radius: 50%;
@@ -628,6 +652,11 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
   cursor: pointer; border: 2.5px solid transparent;
   transition: transform 0.12s;
 }
+.ai-color-row .csw {
+  width: auto; min-width: 52px; height: 26px; padding: 0 8px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
+  border-radius: 4px; border: 2px solid transparent;
+}
 .csw:hover { transform: scale(1.2); }
 .csw.sel { border-color: var(--ink); }
 .em-foot {
@@ -835,42 +864,42 @@ const DEFAULT_DATA = {
               "id": "_g7x3ijf",
               "name": "SmartFind AI Bilingural Enablement",
               "desc": "Smartfind AI Translation was created to replace the old manual and vendor-based translation process, which was costly, slow, and difficult to scale across multiple countries and languages. With this new capability, Smartfind can now automatically translate both service strings on pages and service-related files such as brochures and T&Cs in formats like Word, PowerPoint, Excel, PDF, and TXT. The solution uses AI to improve efficiency and reduce external translation costs, while still keeping Geo Team review as the final quality checkpoint to ensure translation accuracy.",
-              "ai": true,
+              "ai": "blue",
               "demo": ""
             },
             {
               "id": "_cu1o1nz",
               "name": "SSG Super Agent",
               "desc": "Enable Super agent cross sales tools/platforms, including highspot, D365, LPC, Smartfind AI chatbot to bring more sellers user-friendly experiences",
-              "ai": true,
+              "ai": "blue",
               "demo": ""
             },
             {
               "id": "_wcj9n27",
               "name": "APOS Sales Support AI",
               "desc": "APOS Sales Support AI (AI Case management and Create Oppty & Quote, AI Special bid and entitlement approvals).$1,582k in 3-year savings to repurpose 14 headcount*",
-              "ai": true,
+              "ai": "blue",
               "demo": ""
             },
             {
               "id": "_o707i19",
               "name": "APOS Data Platform AI",
               "desc": "Expand the AI recommendation tech into ISG process, it increase the sellers / partners experience and productivities - To be moved under BAU APOS  CDP/PQ (CDP is ISG, PQ is IDG). Medabase solution )",
-              "ai": true,
+              "ai": "blue",
               "demo": ""
             },
             {
               "id": "_gx3rabz",
               "name": "Deal Desk AI Agent",
               "desc": "Agentic AI to reduce transactional deal governance tasks and deliver a streamlined solutioning and pricing process for transactional G2a opportunities",
-              "ai": true,
+              "ai": "blue",
               "demo": ""
             },
             {
               "id": "_0xvphmn",
               "name": "GPT Cost",
               "desc": "The GPS Cost Pricing Workbench automates and streamlines sales cost and list price calculations, enabling fast, accurate, and customizable pricing with easy data integration and business system compatibility",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_GPS.mp4",
               "star": false
             }
@@ -885,14 +914,14 @@ const DEFAULT_DATA = {
               "id": "_yrranxq",
               "name": "Concord MSPO Tool",
               "desc": "The Concord MSPO tool offers centralized project management, automated approvals, integrated document handling, and real-time analytics to enhance efficiency and transparency in offering development.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_concornMSPO.mp4"
             },
             {
               "id": "_f9plf83",
               "name": "Smart Recommendations",
               "desc": "Expand the AI recommendation tech into ISG process via DCSC catalog, it increase the sellers / partners experience and productivities",
-              "ai": true,
+              "ai": "blue",
               "demo": ""
             }
           ]
@@ -912,7 +941,7 @@ const DEFAULT_DATA = {
               "id": "_ndntblw",
               "name": "Parts Reverse& Repair powered by xdock AI",
               "desc": "One-off Extraction of POD Information Based on Convolutional Neural Networks and  filtering algorithm, dirving auto conveyor operates",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_XODCK_AIPOD.mp4",
               "star": false,
               "costSaving": null,
@@ -922,7 +951,7 @@ const DEFAULT_DATA = {
               "id": "_d6fwatj",
               "name": "LogiAgent",
               "desc": "AI logistics partner: unifies data and workflows in one interface for efficiency, integration and scalability.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_LogiAgent.mp4",
               "star": false
             },
@@ -930,7 +959,7 @@ const DEFAULT_DATA = {
               "id": "_itgmyvz",
               "name": "Live interception platform",
               "desc": "live interception platform to detect parts operation exception",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_LIP.mp4",
               "star": false,
               "costSaving": null,
@@ -940,7 +969,7 @@ const DEFAULT_DATA = {
               "id": "_f907vd7",
               "name": "Spare parts intelligent Tariffix alert AI tool",
               "desc": "AI suggests tariffix changes impact scope& mitigation\uff0chelp leaders informed decisions from days to hours",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_Tariffix.mp4",
               "star": false,
               "costSaving": null,
@@ -950,7 +979,7 @@ const DEFAULT_DATA = {
               "id": "_ihqsmrv",
               "name": "AI Fru Finder",
               "desc": "AI-powered FRU part identification tool with high accuracy and faster diagnostics.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_AIFRUFinder.mp4",
               "star": false,
               "costSaving": null,
@@ -967,7 +996,7 @@ const DEFAULT_DATA = {
               "id": "_xvjjdjn",
               "name": "SSG Service Procurement Orchestration System",
               "desc": "AI Powered Platform to Support SSG Service Procurement Source to Award Business",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_TonkeanAI.mp4",
               "star": false,
               "costSaving": null,
@@ -977,7 +1006,7 @@ const DEFAULT_DATA = {
               "id": "_7vekisv",
               "name": "Billing Validation AI Tool",
               "desc": "AI-Powered Billing Validation Analytics and invoice OCR Function Enablement",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_BillingValidationl.mp4",
               "star": false,
               "costSaving": null,
@@ -1000,28 +1029,28 @@ const DEFAULT_DATA = {
               "id": "_2xx2833",
               "name": "Agentic Intelligent Resolver",
               "desc": "The Agentic Intelligent Resolver (AIR) represents a groundbreaking innovation in customer support automation, delivers seamless, end-to-end issue resolution for customers while driving operational efficiency and cost savings. As the first Agentic AI Agent deployed in ISS ecosystem, AIR harmonizes multiple service channels into a unified, intelligent experience. Building advanced AI capabilities and leveraging existing tools such as the Problem Diagnostic Agent, Unified Knowledge Management, Address Validation Agent, Entitlement Agent,  Work Order agent, and FRU Finder",
-              "ai": true,
+              "ai": "blue",
               "demo": "AIR.mp4"
             },
             {
               "id": "_v3q5nk6",
               "name": "AI One Language Community",
               "desc": "AI One Language Community transforms customer experience and breakthroughs the language barrier between different countries, supporting 22 languages , centralizes the operation, deliver the excellent content quality.",
-              "ai": true,
+              "ai": "blue",
               "demo": "AIOLC.mp4"
             },
             {
               "id": "_8ydr64n",
               "name": "SmartP2P",
               "desc": "AI invoice recognition & processing for OACP, LGAP, Ariba, LSUMP, SDMS.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_smart_p2p.mp4"
             },
             {
               "id": "_v9xqvu9",
               "name": "Project-based Service Delivery Journey",
               "desc": "The product streamlines project-based service delivery by automating deal governance, cost modeling, project management and project accounting through the D365 MSPO system",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_PSDUser.mp4",
               "star": false,
               "costSaving": null,
@@ -1031,7 +1060,7 @@ const DEFAULT_DATA = {
               "id": "_a25qqyh",
               "name": "PISA",
               "desc": "Project Intelligent Service Assistant. AI-powered agent built natively inside MSPO to transform project delivery and project accounting across the full lifecycle.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_PISA.mp4",
               "star": false
             }
@@ -1053,21 +1082,21 @@ const DEFAULT_DATA = {
               "id": "p1",
               "name": "Automated Invoice Checker",
               "desc": "AI-built programs scan thousands of invoice pages in one second.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_bulk_invoice_checker.mp4"
             },
             {
               "id": "p2",
               "name": "Bundle Price Simulator",
               "desc": "Reconstruct bundle billing prices for any historical period.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_historical_bundle_price_calculator.mp4"
             },
             {
               "id": "p3",
               "name": "Migration Data Validator",
               "desc": "Cross-reference multiple tables to identify data discrepancies.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_migration_data_validator.mp4"
             }
           ]
@@ -1081,14 +1110,14 @@ const DEFAULT_DATA = {
               "id": "p5",
               "name": "Web LGFS Quotation Tool",
               "desc": "Built-in algorithm, auto-fetches BondRate, generates PDF quotes.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_web_lgfs_quotation_tool.mp4"
             },
             {
               "id": "p6",
               "name": "Buyout Price Estimator",
               "desc": "Automatically calculate buyout prices at lease maturity.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo-Buyout.mp4"
             }
           ]
@@ -1102,14 +1131,14 @@ const DEFAULT_DATA = {
               "id": "p7",
               "name": "R.DaaS EoL Dashboard",
               "desc": "Dynamic visualization, export support, mobile inventory intake.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_rdaas_eol_dashboard.mp4"
             },
             {
               "id": "p8",
               "name": "Report Logic Guide",
               "desc": "Visualize report data sources and structures for rapid issue diagnosis.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_funded_volume_report_dataflow.mp4"
             }
           ]
@@ -1129,14 +1158,14 @@ const DEFAULT_DATA = {
               "id": "_alh8yl2",
               "name": "Unified Knowledge Mgmt.",
               "desc": "An AI-powered platform for centralized ISS knowledge creation, search, and sharing.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_ISS_UKM.mp4"
             },
             {
               "id": "_hipac8q",
               "name": "SSG AIESA",
               "desc": "Your AI-powered assistant that streamlines SSG knowledge into a single, powerful, easy-to-use platform, helping users get more done, faster.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_AIESA.mp4",
               "star": false
             }
@@ -1151,7 +1180,7 @@ const DEFAULT_DATA = {
               "id": "_e0g3msu",
               "name": "ProvisionNow AI Dashboard",
               "desc": "ProvisionNow AI enables natural language queries and real-time visibility across the end-to-end ProvisionNow deployment lifecycle",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_ProvisionNow.mp4",
               "star": false,
               "costSaving": null,
@@ -1161,7 +1190,7 @@ const DEFAULT_DATA = {
               "id": "_4k1pw1g",
               "name": "ISS ChatBI",
               "desc": "AI-powered BI for natural language data queries and insights",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_ISSChatbi.mp4",
               "star": false,
               "costSaving": null,
@@ -1171,7 +1200,7 @@ const DEFAULT_DATA = {
               "id": "_tg69ozw",
               "name": "SSG Sales Ops Agent",
               "desc": "AI platform that enables natural language queries for SSG sales-related data",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_SSGSalesOpsAgent.mp4",
               "star": false,
               "costSaving": null,
@@ -1188,7 +1217,7 @@ const DEFAULT_DATA = {
               "id": "_7z88v4l",
               "name": "BPH-BCPF Mapping",
               "desc": "A AI-Build tool help to recommand the mapping from 193 BPH to 1899 BCPF",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_BPH_BCPF.mp4",
               "star": false,
               "costSaving": null,
@@ -1198,7 +1227,7 @@ const DEFAULT_DATA = {
               "id": "_7957w1o",
               "name": "PM Tool",
               "desc": "A project management tool enabling end-to-end oversight of scope, budget, timeline, and execution status, with integrated BCPF change point mapping, KPI tracking, and automated generation of executive review materials. This tool can improve overall project transparency and cross team coloration efficiency.",
-              "ai": true,
+              "ai": "blue",
               "demo": "demo_PM.mp4",
               "star": false,
               "costSaving": null,
@@ -1271,6 +1300,14 @@ function renderFilterBar() {
     const a = el('button', 'add-chip-btn'); a.textContent = '+ Team';
     a.onclick = () => openEM('l2-new'); bar.appendChild(a);
   }
+  // AI Tag Legend
+  const legend = el('div', 'f-legend');
+  legend.innerHTML = `
+    <div class="f-legend-item"><span class="f-legend-dot blue"></span>Deployed & Adopting</div>
+    <div class="f-legend-item"><span class="f-legend-dot green"></span>Deployed & In Use</div>
+    <div class="f-legend-item"><span class="f-legend-dot red"></span>Prototype</div>
+  `;
+  bar.appendChild(legend);
 }
 
 function makeChip(label, id, type, active, colorObj) {
@@ -1359,7 +1396,15 @@ function makeCard(l4, l2, i2, i3, i4, c) {
   const row = el('div', 'card-row');
   const nameEl = el('span', 'card-name'); nameEl.textContent = l4.name; row.appendChild(nameEl);
   if (l4.star) { const s = el('span', 'star-tag'); s.textContent = '★'; s.title = 'Best Solution'; row.appendChild(s); }
-  if (l4.ai) { const t = el('span', 'ai-tag'); t.textContent = 'AI'; row.appendChild(t); }
+  if (l4.ai) {
+    const t = el('span', 'ai-tag ai-' + l4.ai);
+    t.textContent = 'AI';
+    if (editMode) {
+      t.title = 'Click to change AI color';
+      t.onclick = e => { e.stopPropagation(); cycleAiColor(i2, i3, i4, l4.ai); };
+    }
+    row.appendChild(t);
+  }
   if (l4.costSaving) { const m = el('span', 'metric-tag metric-cost'); m.textContent = 'US$ ' + l4.costSaving; row.appendChild(m); }
   if (l4.efficiency) { const m = el('span', 'metric-tag metric-eff'); m.textContent = l4.efficiency + '%'; row.appendChild(m); }
   top.appendChild(row); card.appendChild(top);
@@ -1392,6 +1437,14 @@ function el(tag, cls) { const e = document.createElement(tag); if (cls) e.classN
 function mkBtn(txt, fn, isDel) { const b = el('button', 'l2-hdr-btn' + (isDel ? ' del' : '')); b.textContent = txt; b.onclick = e => { e.stopPropagation(); fn(); }; return b; }
 function mkL3Btn(txt, fn, isDel) { const b = el('button', 'l3-edit-btn' + (isDel ? ' del' : '')); b.textContent = txt; b.onclick = e => { e.stopPropagation(); fn(); }; return b; }
 function mkCbtn(txt, fn, isDel) { const b = el('button', 'cbtn' + (isDel ? ' del' : '')); b.textContent = txt; b.onclick = e => { e.stopPropagation(); fn(); }; return b; }
+
+const AI_COLORS = ['blue', 'green', 'red'];
+function cycleAiColor(i2, i3, i4, current) {
+  const idx = AI_COLORS.indexOf(current);
+  const next = idx === -1 ? 'blue' : (idx === AI_COLORS.length - 1 ? null : AI_COLORS[idx + 1]);
+  treeData.l2[i2].l3[i3].l4[i4].ai = next;
+  saveData(); render();
+}
 
 let dragSrc = null, dragSrcIdx = -1;
 function setupDragDrop() {
@@ -1483,8 +1536,8 @@ function openEM(type, i2, i3, i4) {
   else if (type === 'l2-new') { title.textContent = 'Add Team'; lv.textContent = 'Team'; body.appendChild(tf('name', 'Team Name', '')); }
   else if (type === 'l3') { const l3 = treeData.l2[i2].l3[i3]; title.textContent = 'Edit Group'; lv.textContent = 'Group'; body.appendChild(tf('name', 'Group Name', l3.name)); body.appendChild(cf('colorKey', l3.colorKey)); }
   else if (type === 'l3-new') { title.textContent = 'Add Group'; lv.textContent = 'Group'; body.appendChild(l2sel('l2pick', 'Add to Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(tf('name', 'Group Name', '')); body.appendChild(cf('colorKey', 'blue')); }
-  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; title.textContent = 'Edit Card'; lv.textContent = 'Card'; body.appendChild(tf('name', 'Project Name', l4.name)); body.appendChild(taf('desc', 'Description', l4.desc || '')); body.appendChild(tg('ai', 'AI Tag', !!l4.ai)); body.appendChild(tf('demo', 'Demo Video Filename', l4.demo || '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', l4.costSaving, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', l4.efficiency, '')); body.appendChild(tg('star', '★ Star / Best Solution', !!l4.star)); }
-  else if (type === 'l4-new') { title.textContent = 'Add Card'; lv.textContent = 'Card'; body.appendChild(l2sel('l2pick', 'Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(l3sel('l3pick', 'Group', i2 !== undefined ? treeData.l2[i2].id : '', i3 !== undefined ? treeData.l2[i2].l3[i3].id : '')); body.appendChild(tf('name', 'Project Name', '')); body.appendChild(taf('desc', 'Description', '')); body.appendChild(tg('ai', 'AI Tag', true)); body.appendChild(tf('demo', 'Demo Video Filename', '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', undefined, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', undefined, '')); body.appendChild(tg('star', '★ Star / Best Solution', false)); }
+  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; title.textContent = 'Edit Card'; lv.textContent = 'Card'; body.appendChild(tf('name', 'Project Name', l4.name)); body.appendChild(taf('desc', 'Description', l4.desc || '')); body.appendChild(aiCf('ai', l4.ai)); body.appendChild(tf('demo', 'Demo Video Filename', l4.demo || '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', l4.costSaving, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', l4.efficiency, '')); body.appendChild(tg('star', '★ Star / Best Solution', !!l4.star)); }
+  else if (type === 'l4-new') { title.textContent = 'Add Card'; lv.textContent = 'Card'; body.appendChild(l2sel('l2pick', 'Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(l3sel('l3pick', 'Group', i2 !== undefined ? treeData.l2[i2].id : '', i3 !== undefined ? treeData.l2[i2].l3[i3].id : '')); body.appendChild(tf('name', 'Project Name', '')); body.appendChild(taf('desc', 'Description', '')); body.appendChild(aiCf('ai', 'blue')); body.appendChild(tf('demo', 'Demo Video Filename', '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', undefined, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', undefined, '')); body.appendChild(tg('star', '★ Star / Best Solution', false)); }
   else if (type === 'site-hdr') { title.textContent = 'Edit Header'; lv.textContent = 'Site'; body.appendChild(tf('hdrTitle', 'Left Text', siteTitle)); body.appendChild(tf('hdrSub', 'Right Text (subtitle)', siteSub)); }
   else if (type === 'site-ftr') { title.textContent = 'Edit Footer'; lv.textContent = 'Site'; body.appendChild(tf('ftrNote', 'Footer Text', siteFtr)); }
   document.getElementById('em-overlay').classList.add('open');
@@ -1495,6 +1548,31 @@ function tn(id, label, val, prefix) { const w = el('div', 'em-field'); const lb 
 function taf(id, label, val) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const ta = document.createElement('textarea'); ta.id = 'em-' + id; ta.value = val || ''; w.appendChild(ta); return w; }
 function tg(id, label, val) { const w = el('div', 'em-field'); const row = el('div', 'em-row'); const lb = el('span', 'em-row-label'); lb.textContent = label; const btn = el('button', 'tsw' + (val ? ' on' : '')); btn.id = 'em-' + id; btn.dataset.v = val ? '1' : '0'; btn.onclick = () => { const on = btn.dataset.v === '1'; btn.dataset.v = on ? '0' : '1'; btn.classList.toggle('on', !on); }; row.appendChild(lb); row.appendChild(btn); w.appendChild(row); return w; }
 function cf(id, sel) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = 'Color'; const row = el('div', 'color-row'); row.id = 'em-' + id; COLORS.forEach(c => { const sw = el('button', 'csw' + (c.key === sel ? ' sel' : '')); sw.style.background = c.main; sw.dataset.c = c.key; sw.title = c.key; sw.onclick = e => { e.preventDefault(); row.querySelectorAll('.csw').forEach(s => s.classList.remove('sel')); sw.classList.add('sel'); }; row.appendChild(sw); }); w.appendChild(row); return w; }
+function aiCf(id, sel) {
+  const AI_COLOR_OPTS = [
+    { key: 'blue',  label: 'Deployed & Adopting', bg: '#3B82F6' },
+    { key: 'green', label: 'Deployed & In Use',   bg: '#22C55E' },
+    { key: 'red',   label: 'Prototype',            bg: '#EF4444' },
+    { key: '',      label: 'None',                  bg: 'transparent', border: '1.5px dashed #ccc' }
+  ];
+  const w = el('div', 'em-field');
+  w.appendChild(document.createElement('label')).textContent = 'AI Tag';
+  const row = el('div', 'color-row ai-color-row');
+  row.id = 'em-' + id;
+  AI_COLOR_OPTS.forEach(c => {
+    const sw = el('button', 'csw' + (c.key === (sel || '') ? ' sel' : ''));
+    sw.style.background = c.bg;
+    if (c.border) sw.style.border = c.border;
+    sw.style.color = c.key ? '#fff' : '#999';
+    sw.dataset.c = c.key;
+    sw.title = c.label;
+    sw.textContent = c.key ? 'AI' : '—';
+    sw.onclick = e => { e.preventDefault(); row.querySelectorAll('.csw').forEach(s => s.classList.remove('sel')); sw.classList.add('sel'); };
+    row.appendChild(sw);
+  });
+  w.appendChild(row);
+  return w;
+}
 function l2sel(id, label, defaultL2Id) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const sel = document.createElement('select'); sel.id = 'em-' + id; treeData.l2.forEach(l2 => { const o = document.createElement('option'); o.value = l2.id; o.textContent = l2.name; if (l2.id === defaultL2Id) o.selected = true; sel.appendChild(o); }); w.appendChild(sel); return w; }
 function l3sel(id, label, l2id, defaultL3Id) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const sel = document.createElement('select'); sel.id = 'em-' + id; const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) team.l3.forEach(l3 => { const o = document.createElement('option'); o.value = l3.id; o.textContent = l3.name; if (l3.id === defaultL3Id) o.selected = true; sel.appendChild(o); }); w.appendChild(sel); return w; }
 

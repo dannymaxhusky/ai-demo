@@ -185,6 +185,15 @@ html, body {
 body.edit-mode .h-reset { display: inline-flex; }
 .h-export { margin-left: 4px; }
 
+.h-github-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 11px; border-radius: var(--r-sm);
+  font-size: 11px; font-weight: 600; font-family: var(--font);
+  border: 1.5px solid var(--border); background: transparent;
+  color: var(--ink-4); cursor: pointer; transition: all 0.14s;
+}
+.h-github-btn:hover { color: #24292e; border-color: #24292e; background: #f6f8fa; }
+
 .h-badge {
   padding: 3px 11px; border-radius: var(--r-pill);
   font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
@@ -590,6 +599,13 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
   opacity: 0; pointer-events: none; transition: opacity 0.2s;
 }
 #em-overlay.open { opacity: 1; pointer-events: all; }
+#gh-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.36); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+#gh-overlay.open { opacity: 1; pointer-events: all; }
 #em-box {
   background: var(--surface); border-radius: 14px;
   width: 420px; max-width: 92vw; max-height: 88vh; overflow-y: auto;
@@ -751,6 +767,10 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
       <button class="h-reset" type="button" onclick="exportData()">↓ Export</button>
       <button class="h-reset" type="button" onclick="document.getElementById('import-file').click()">↑ Import</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this.files[0])">
+      <button class="h-btn h-github-btn" id="github-btn" onclick="openGitHubModal()" title="Save to GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>GitHub</span>
+      </button>
       <button class="h-btn active" id="edit-toggle" onclick="toggleEditMode()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -798,6 +818,44 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
     <div class="em-foot">
       <button class="em-btn em-cancel" onclick="closeEM()">Cancel</button>
       <button class="em-btn em-save" onclick="saveEM()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- GITHUB MODAL -->
+<div id="gh-overlay" class="">
+  <div id="gh-box">
+    <div class="em-head">
+      <span class="em-title">Save to GitHub</span>
+      <span class="em-lv">Settings</span>
+      <button class="em-x" onclick="closeGitHubModal()">✕</button>
+    </div>
+    <div class="em-body" id="gh-body">
+      <div class="em-field">
+        <label>Owner / Username</label>
+        <input type="text" id="gh-owner" placeholder="e.g. dannymaxhusky">
+      </div>
+      <div class="em-field">
+        <label>Repository</label>
+        <input type="text" id="gh-repo" placeholder="e.g. ai-demo">
+      </div>
+      <div class="em-field">
+        <label>Branch</label>
+        <input type="text" id="gh-branch" value="main">
+      </div>
+      <div class="em-field">
+        <label>File Path</label>
+        <input type="text" id="gh-path" value="SSG_Showcase.html">
+      </div>
+      <div class="em-field">
+        <label>Personal Access Token</label>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx">
+        <small style="color:var(--ink-3);font-size:10px;margin-top:4px;display:block;">Stored locally in your browser only.</small>
+      </div>
+    </div>
+    <div class="em-foot">
+      <button class="em-btn em-cancel" onclick="closeGitHubModal()">Cancel</button>
+      <button class="em-btn em-save" onclick="saveToGitHub()">Save to GitHub</button>
     </div>
   </div>
 </div>
@@ -1513,6 +1571,91 @@ function setupDragDrop() {
 
 function toggleEditMode() { editMode = !editMode; document.body.classList.toggle('edit-mode', editMode); document.getElementById('edit-toggle').classList.toggle('active', editMode); document.getElementById('edit-label').textContent = editMode ? 'Done' : 'Edit'; render(); }
 function confirmReset() { if (confirm('Reset all data to defaults?')) { treeData = dc(DEFAULT_DATA); activeFilter = 'all'; saveData(); render(); } }
+
+/* ── GitHub Save ── */
+const GH_KEY = 'ssg-gh-config';
+function getGhConfig() {
+  try { return JSON.parse(localStorage.getItem(GH_KEY)) || {}; } catch { return {}; }
+}
+function saveGhConfig(cfg) { localStorage.setItem(GH_KEY, JSON.stringify(cfg)); }
+function openGitHubModal() {
+  const cfg = getGhConfig();
+  document.getElementById('gh-owner').value = cfg.owner || '';
+  document.getElementById('gh-repo').value = cfg.repo || '';
+  document.getElementById('gh-branch').value = cfg.branch || 'main';
+  document.getElementById('gh-path').value = cfg.path || 'SSG_Showcase.html';
+  document.getElementById('gh-token').value = cfg.token || '';
+  document.getElementById('gh-overlay').classList.add('open');
+}
+function closeGitHubModal() { document.getElementById('gh-overlay').classList.remove('open'); }
+function saveToGitHub() {
+  const owner = document.getElementById('gh-owner').value.trim();
+  const repo = document.getElementById('gh-repo').value.trim();
+  const branch = document.getElementById('gh-branch').value.trim() || 'main';
+  const path = document.getElementById('gh-path').value.trim();
+  const token = document.getElementById('gh-token').value.trim();
+  if (!owner || !repo || !path || !token) { alert('Please fill in all fields.'); return; }
+  saveGhConfig({ owner, repo, branch, path, token });
+  closeGitHubModal();
+  doSaveToGitHub(owner, repo, branch, path, token);
+}
+async function doSaveToGitHub(owner, repo, branch, path, token) {
+  const statusEl = document.createElement('div');
+  statusEl.style = 'position:fixed;bottom:20px;right:20px;background:#24292e;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;z-index:9999;';
+  statusEl.textContent = '⏳ Connecting to GitHub...';
+  document.body.appendChild(statusEl);
+  try {
+    // 1. Get current file SHA
+    const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`, {
+      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    let sha = null;
+    if (getRes.ok) {
+      const data = await getRes.json();
+      sha = data.sha;
+      statusEl.textContent = '📝 Updating file...';
+    } else if (getRes.status === 404) {
+      statusEl.textContent = '📄 File not found, creating new...';
+    } else {
+      throw new Error('Failed to get file info: ' + getRes.status);
+    }
+    // 2. Build new content
+    const exportObj = { root: treeData.root, l2: treeData.l2, siteTitle, siteSub, siteFtr };
+    const newDefault = JSON.stringify(exportObj, null, 2);
+    const re = /const DEFAULT_DATA = \{[\s\S]*?\n};\s*\n/m;
+    const src = document.documentElement.outerHTML;
+    if (!re.test(src)) throw new Error('DEFAULT_DATA block not found');
+    const newSrc = src.replace(re, 'const DEFAULT_DATA = ' + newDefault + ';\n');
+    const content = btoa(unescape(encodeURIComponent(newSrc)));
+    // 3. PUT to GitHub
+    const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + token,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Update SSG data via web editor [' + new Date().toISOString().slice(0,16) + ']',
+        content,
+        branch,
+        sha
+      })
+    });
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || 'GitHub API error ' + putRes.status);
+    }
+    statusEl.textContent = '✅ Saved to GitHub successfully!';
+    statusEl.style.background = '#227A15';
+    setTimeout(() => { statusEl.remove(); }, 3000);
+  } catch(err) {
+    statusEl.textContent = '❌ Error: ' + err.message;
+    statusEl.style.background = '#E2231A';
+    setTimeout(() => { statusEl.remove(); }, 6000);
+  }
+}
+
 /* ── Export: bake current data into HTML, download updated file ── */
 function exportData() {
   try {

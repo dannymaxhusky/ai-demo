@@ -1393,14 +1393,26 @@ function makeL3Group(l3, l2, i2, i3) {
   editCtrl.appendChild(mkL3Btn('×', () => { if (confirm('Delete group "' + l3.name + '"?')) { treeData.l2[i2].l3.splice(i3, 1); if (activeFilter === l3.id) activeFilter = 'all'; saveData(); render(); } }, true));
   label.appendChild(editCtrl); group.appendChild(label);
   const cards = el('div', 'l3-cards'); cards.dataset.i2 = i2; cards.dataset.i3 = i3;
-  cards.ondragover = e => { if (editMode) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; cards.classList.add('drag-over'); } };
-  cards.ondragleave = () => cards.classList.remove('drag-over');
+  cards.ondragenter = e => { if (editMode) { e.preventDefault(); cards.classList.add('drag-over'); } };
+  cards.ondragover = e => { if (editMode) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; } };
+  cards.ondragleave = e => { if (editMode && !cards.contains(e.relatedTarget)) cards.classList.remove('drag-over'); };
   cards.ondrop = e => {
     if (!editMode) return; e.preventDefault(); cards.classList.remove('drag-over');
     try {
       const src = JSON.parse(e.dataTransfer.getData('text/plain'));
+      const cardEl = e.target.closest('.proj-card');
+      // Find drop index based on mouse position relative to cards
+      let dropIdx = l3.l4.length; // default: end
+      if (cardEl) {
+        const children = Array.from(cards.children);
+        const cardIdx = children.indexOf(cardEl);
+        if (cardIdx >= 0) {
+          const cardRect = cardEl.getBoundingClientRect();
+          dropIdx = e.clientX < cardRect.left + cardRect.width / 2 ? cardIdx : cardIdx + 1;
+        }
+      }
       const [cardData] = treeData.l2[src.i2].l3[src.i3].l4.splice(src.i4, 1);
-      treeData.l2[i2].l3[i3].l4.splice(i4, 0, cardData);
+      treeData.l2[i2].l3[i3].l4.splice(dropIdx, 0, cardData);
       saveData(); render();
     } catch(err) {}
   };

@@ -1355,6 +1355,10 @@ function loadData() {
       localStorage.removeItem('ssg-v6');
       treeData = dc(DEFAULT_DATA);
     }
+    // Migrate ai:true → ai:'blue' (old boolean → color string format)
+    treeData.l2.forEach(l2 => l2.l3.forEach(l3 => l3.l4.forEach(l4 => {
+      if (l4.ai === true) l4.ai = 'blue';
+    })));
   } catch(e) { localStorage.removeItem('ssg-v6'); treeData = dc(DEFAULT_DATA); }
 }
 function openSettings() {

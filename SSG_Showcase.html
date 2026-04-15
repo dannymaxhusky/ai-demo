@@ -1524,25 +1524,10 @@ const GH = {
   branch: 'main',
   path: 'SSG_Showcase.html'
 };
-const GH_TOKEN_KEY = 'ssg-gh-token';
-
-function getGhToken() {
-  let token = localStorage.getItem(GH_TOKEN_KEY);
-  if (!token) {
-    try {
-      const old = JSON.parse(localStorage.getItem('ssg-gh-config') || '{}');
-      token = old.token || null;
-      if (token) {
-        localStorage.setItem(GH_TOKEN_KEY, token);
-        localStorage.removeItem('ssg-gh-config');
-      }
-    } catch {}
-  }
-  return token;
-}
+const GH_TOKEN = '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';
 
 async function autoSaveToGitHub() {
-  const token = getGhToken();
+  const token = GH_TOKEN;
   if (!token) return;
   const statusEl = document.createElement('div');
   statusEl.style = 'position:fixed;bottom:20px;right:20px;background:#24292e;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999;max-width:300px;';

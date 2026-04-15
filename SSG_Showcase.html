@@ -1638,8 +1638,12 @@ async function autoSaveToGitHub() {
     }
     if (getRes.ok) {
       const data = await getRes.json();
-      // Remove injected extension elements before capturing source
-      document.querySelectorAll('#bottomBar, editor-card, [style*="chrome-extension://"]').forEach(el => el.remove());
+      // Remove injected extension/CRX elements
+      document.querySelectorAll('#bottomBar, editor-card, scribe-shadow, [data-crx]').forEach(el => el.remove());
+      // Remove toast divs injected by extensions
+      var toRemove = [];
+      document.body.childNodes.forEach(n => { if (n.nodeType === 1) { var s = n.style && n.style.cssText || ''; if (s.includes('position: fixed') && s.includes('bottom: 20px') && s.includes('z-index: 9999')) toRemove.push(n); } });
+      toRemove.forEach(el => el.remove());
       const exportObj = { root: treeData.root, l2: treeData.l2, siteTitle, siteSub, siteFtr };
       const newDefault = JSON.stringify(exportObj, null, 2);
       const reBlock = new RegExp('const DEFAULT_DATA = \\{[\\s\\S]*?\\n\\};\\s*\\n', 'm');

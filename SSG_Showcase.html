@@ -751,6 +751,7 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
       <button class="h-reset" type="button" onclick="exportData()">↓ Export</button>
       <button class="h-reset" type="button" onclick="document.getElementById('import-file').click()">↑ Import</button>
       <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this.files[0])">
+      <button class="h-reset" onclick="openSettings()">⚙</button>
       <button class="h-btn" id="edit-toggle" onclick="toggleEditMode()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -784,6 +785,45 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
 <!-- LENOVO LOGO — fixed right side -->
 <div class="lenovo-badge">
   <img src="https://origin-brandworld.lenovo.com/wp-content/uploads/2021/01/03_Logo_01Overview_6B_v-07-768x183.png" alt="Lenovo" height="56">
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-overlay" style="position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.36);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;">
+  <div style="background:var(--surface);border-radius:14px;width:440px;max-width:92vw;padding:24px;box-shadow:var(--sh-lg);animation:emPop .2s ease">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <span style="font-size:16px;font-weight:800">GitHub Sync Settings</span>
+      <button onclick="closeSettings()" style="background:none;border:none;font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:11px;font-weight:700;color:var(--ink-3)">GitHub PAT Token</label>
+        <input id="sg-token" type="password" placeholder="ghp_..." style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none">
+        <span style="font-size:10px;color:var(--ink-4)">Stored only in this browser's localStorage</span>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:11px;font-weight:700;color:var(--ink-3)">Owner</label>
+          <input id="sg-owner" type="text" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none">
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:11px;font-weight:700;color:var(--ink-3)">Repo</label>
+          <input id="sg-repo" type="text" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:11px;font-weight:700;color:var(--ink-3)">Branch</label>
+          <input id="sg-branch" type="text" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none">
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:11px;font-weight:700;color:var(--ink-3)">File Path</label>
+          <input id="sg-path" type="text" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none">
+        </div>
+      </div>
+      <div id="sg-status" style="font-size:12px;color:var(--ink-3);display:none"></div>
+      <button onclick="saveGhConfig()" style="background:var(--brand);color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">Save Settings</button>
+    </div>
+  </div>
 </div>
 
 <!-- EDIT MODAL -->
@@ -1309,6 +1349,43 @@ function loadData() {
     }
   } catch(e) { localStorage.removeItem('ssg-v6'); treeData = dc(DEFAULT_DATA); }
 }
+function openSettings() {
+  const overlay = document.getElementById('settings-overlay');
+  const cfg = getGhConfig();
+  document.getElementById('sg-token').value = cfg && cfg.token || '';
+  document.getElementById('sg-owner').value = cfg && cfg.owner || GH.owner;
+  document.getElementById('sg-repo').value = cfg && cfg.repo || GH.repo;
+  document.getElementById('sg-branch').value = cfg && cfg.branch || GH.branch;
+  document.getElementById('sg-path').value = cfg && cfg.path || GH.path;
+  document.getElementById('sg-status').style.display = 'none';
+  overlay.style.display = 'flex';
+}
+
+function closeSettings() {
+  document.getElementById('settings-overlay').style.display = 'none';
+}
+
+function saveGhConfig() {
+  const token = document.getElementById('sg-token').value.trim();
+  const owner = document.getElementById('sg-owner').value.trim();
+  const repo = document.getElementById('sg-repo').value.trim();
+  const branch = document.getElementById('sg-branch').value.trim();
+  const path = document.getElementById('sg-path').value.trim();
+  if (!token || !owner || !repo || !branch || !path) {
+    const s = document.getElementById('sg-status');
+    s.textContent = 'All fields are required.';
+    s.style.color = '#E2231A';
+    s.style.display = 'block';
+    return;
+  }
+  localStorage.setItem('ssg-gh-config', JSON.stringify({ token, owner, repo, branch, path }));
+  const s = document.getElementById('sg-status');
+  s.textContent = 'Settings saved!';
+  s.style.color = '#227A15';
+  s.style.display = 'block';
+  setTimeout(closeSettings, 1200);
+}
+
 function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); try { autoSaveToGitHub(); } catch(e) { console.error('autoSaveToGitHub error:', e); } }
 loadData();
 let editMode = false, activeFilter = 'all', cardNums = {};
@@ -1524,10 +1601,17 @@ const GH = {
   branch: 'main',
   path: 'SSG_Showcase.html'
 };
-const GH_TOKEN = atob('Z2l0aHViX3BhdF8xMUI2SzZZNEkwSG1CN2N2Sm9ZcFBiXzRaQ3hlbk5xdkRaWk5GU21idXJZbjBFemlobDl2M05qdDdFU0JOS2dZUlhZVEdCR1oyUkM5czVPSVAz');
+
+function getGhConfig() {
+  try {
+    const saved = localStorage.getItem('ssg-gh-config');
+    return saved ? JSON.parse(saved) : null;
+  } catch(e) { return null; }
+}
 
 async function autoSaveToGitHub() {
-  const token = GH_TOKEN;
+  const cfg = getGhConfig();
+  const token = cfg && cfg.token;
   if (!token) return;
   const statusEl = document.createElement('div');
   statusEl.style = 'position:fixed;bottom:20px;right:20px;background:#24292e;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999;max-width:300px;';
@@ -1536,7 +1620,11 @@ async function autoSaveToGitHub() {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
   try {
-    const getRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`, {
+    const owner = cfg && cfg.owner || GH.owner;
+    const repo = cfg && cfg.repo || GH.repo;
+    const branch = cfg && cfg.branch || GH.branch;
+    const gpath = cfg && cfg.path || GH.path;
+    const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${gpath}?ref=${branch}`, {
       headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' },
       signal: controller.signal
     });
@@ -1554,7 +1642,7 @@ async function autoSaveToGitHub() {
     if (!reBlock.test(src)) throw new Error('DEFAULT_DATA block not found');
     const newSrc = src.replace(reBlock, 'const DEFAULT_DATA = ' + newDefault + ';\n');
     const encContent = btoa(unescape(encodeURIComponent(newSrc)));
-    const putRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, {
+    const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${gpath}`, {
       method: 'PUT',
       headers: {
         'Authorization': 'token ' + token,
@@ -1564,7 +1652,7 @@ async function autoSaveToGitHub() {
       body: JSON.stringify({
         message: 'Auto-sync from web editor [' + new Date().toISOString().slice(0,16) + ']',
         content: encContent,
-        branch: GH.branch,
+        branch: branch,
         sha
       }),
       signal: controller.signal

@@ -1372,20 +1372,20 @@ function applySiteTexts() {
 let treeData;
 function loadData() {
   try {
-    const s = localStorage.getItem('ssg-v6');
+    const s = localStorage.getItem('ssg-v7');
     if (s) {
-      try { JSON.parse(s); } catch(e) { localStorage.removeItem('ssg-v6'); s = null; }
+      try { JSON.parse(s); } catch(e) { localStorage.removeItem('ssg-v7'); s = null; }
     }
     treeData = s ? JSON.parse(s) : dc(DEFAULT_DATA);
     if (!treeData || !Array.isArray(treeData.l2)) {
-      localStorage.removeItem('ssg-v6');
+      localStorage.removeItem('ssg-v7');
       treeData = dc(DEFAULT_DATA);
     }
     // Migrate ai:true → ai:'blue' (old boolean → color string format)
     treeData.l2.forEach(l2 => l2.l3.forEach(l3 => l3.l4.forEach(l4 => {
       if (l4.ai === true) l4.ai = 'blue';
     })));
-  } catch(e) { localStorage.removeItem('ssg-v6'); treeData = dc(DEFAULT_DATA); }
+  } catch(e) { localStorage.removeItem('ssg-v7'); treeData = dc(DEFAULT_DATA); }
 }
 function openSettings() {
   const overlay = document.getElementById('settings-overlay');
@@ -1424,7 +1424,7 @@ function saveGhConfig() {
   setTimeout(closeSettings, 1200);
 }
 
-function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); try { autoSaveToGitHub(); } catch(e) { console.error('autoSaveToGitHub error:', e); } }
+function saveData() { localStorage.setItem('ssg-v7', JSON.stringify(treeData)); try { autoSaveToGitHub(); } catch(e) { console.error('autoSaveToGitHub error:', e); } }
 loadData();
 let editMode = false, activeFilter = 'all', cardNums = {};
 document.body.classList.remove('edit-mode');

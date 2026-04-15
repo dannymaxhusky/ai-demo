@@ -1643,6 +1643,8 @@ async function autoSaveToGitHub() {
     } else if (getRes.status !== 404) {
       throw new Error('GitHub fetch failed: ' + getRes.status);
     }
+// Remove injected extension elements before capturing source
+    document.querySelectorAll('#bottomBar, editor-card, [style*="chrome-extension://"]').forEach(el => el.remove());
     const exportObj = { root: treeData.root, l2: treeData.l2, siteTitle, siteSub, siteFtr };
     const newDefault = JSON.stringify(exportObj, null, 2);
     const reBlock = new RegExp('const DEFAULT_DATA = \\{[\\s\\S]*?\\n\\};\\s*\\n', 'm');
@@ -1691,6 +1693,8 @@ function exportData() {
       siteFtr: siteFtr
     };
     var newDefault = JSON.stringify(exportObj, null, 2);
+    // Remove injected extension elements before capturing source
+    document.querySelectorAll('#bottomBar, editor-card, [style*="chrome-extension://"]').forEach(el => el.remove());
     // Match the entire DEFAULT_DATA block (multi-line object)
     var re = /const DEFAULT_DATA = \{[\s\S]*?\n};\s*\n/m;
     var src = document.documentElement.outerHTML;

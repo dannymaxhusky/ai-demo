@@ -551,6 +551,10 @@ body.edit-mode .add-l2-cell { display: flex; }
   position: relative; z-index: 10;
 }
 
+/* ── SYNC SPINNER ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+#gh-sync-spinner svg path { transform-origin: 12px 12px; }
+
 /* ── LENOVO BADGE — fixed right side ── */
 .lenovo-badge {
   position: fixed; right: 0; top: 50%;
@@ -778,6 +782,10 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
     <span class="ftr-note">Lenovo Digitalization Team · AI Showcase · Since March 2026</span>
     <button class="site-edit-btn site-edit-btn--ftr" onclick="openEM('site-ftr')" title="Edit footer text">✏</button>
     <span class="ftr-count" id="ftr-count"><span>34</span> demos</span>
+    <span id="gh-sync-spinner" style="display:none;margin-left:8px;vertical-align:middle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#227A15" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" style="animation:spin 0.8s linear infinite;transform-origin:center"/></svg>
+    </span>
+    <span id="gh-sync-ok" style="display:none;margin-left:8px;color:#227A15;font-size:14px">✓</span>
   </footer>
 
 </div>
@@ -1613,15 +1621,12 @@ async function autoSaveToGitHub() {
   const cfg = getGhConfig();
   const token = cfg && cfg.token;
   if (!token) return;
-  const old = document.getElementById('gh-status-toast');
-  if (old) old.remove();
-  const statusEl = document.createElement('div');
-  statusEl.id = 'gh-status-toast';
-  statusEl.style = 'position:fixed;bottom:20px;right:20px;background:#24292e;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999;max-width:300px;';
-  statusEl.textContent = 'Syncing to GitHub (10s timeout)...';
-  document.body.appendChild(statusEl);
+  const spinner = document.getElementById('gh-sync-spinner');
+  const okMark = document.getElementById('gh-sync-ok');
+  if (spinner) spinner.style.display = 'inline';
+  if (okMark) okMark.style.display = 'none';
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  const timeoutId = setTimeout(() => { controller.abort(); if (spinner) spinner.style.display = 'none'; }, 10000);
   try {
     const owner = cfg && cfg.owner || GH.owner;
     const repo = cfg && cfg.repo || GH.repo;
@@ -1665,14 +1670,12 @@ async function autoSaveToGitHub() {
       const err = await putRes.json();
       throw new Error(err.message || 'GitHub API error ' + putRes.status);
     }
-    statusEl.textContent = 'Synced to GitHub';
-    statusEl.style.background = '#227A15';
-    setTimeout(() => { statusEl.remove(); }, 3000);
+    if (spinner) spinner.style.display = 'none';
+    if (okMark) { okMark.style.display = 'inline'; setTimeout(() => { okMark.style.display = 'none'; }, 3000); }
   } catch(err) {
     clearTimeout(timeoutId);
-    statusEl.textContent = 'GitHub sync failed: ' + err.message;
-    statusEl.style.background = '#E2231A';
-    setTimeout(() => { statusEl.remove(); }, 6000);
+    if (spinner) spinner.style.display = 'none';
+    console.error('GitHub sync failed:', err.message);
   }
 }
 

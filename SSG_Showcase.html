@@ -1613,7 +1613,10 @@ async function autoSaveToGitHub() {
   const cfg = getGhConfig();
   const token = cfg && cfg.token;
   if (!token) return;
+  const old = document.getElementById('gh-status-toast');
+  if (old) old.remove();
   const statusEl = document.createElement('div');
+  statusEl.id = 'gh-status-toast';
   statusEl.style = 'position:fixed;bottom:20px;right:20px;background:#24292e;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999;max-width:300px;';
   statusEl.textContent = 'Syncing to GitHub (10s timeout)...';
   document.body.appendChild(statusEl);

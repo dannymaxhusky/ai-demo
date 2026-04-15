@@ -1531,11 +1531,14 @@ async function autoSaveToGitHub() {
   if (!token) return;
   const statusEl = document.createElement('div');
   statusEl.style = 'position:fixed;bottom:20px;right:20px;background:#24292e;color:#fff;padding:10px 16px;border-radius:8px;font-size:12px;z-index:9999;max-width:300px;';
-  statusEl.textContent = 'Syncing to GitHub...';
+  statusEl.textContent = 'Syncing to GitHub (10s timeout)...';
   document.body.appendChild(statusEl);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
   try {
     const getRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`, {
-      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' },
+      signal: controller.signal
     });
     let sha = null;
     if (getRes.ok) {
@@ -1566,8 +1569,10 @@ async function autoSaveToGitHub() {
         content: encContent,
         branch: GH.branch,
         sha
-      })
+      }),
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     if (!putRes.ok) {
       const err = await putRes.json();
       throw new Error(err.message || 'GitHub API error ' + putRes.status);
@@ -1576,6 +1581,7 @@ async function autoSaveToGitHub() {
     statusEl.style.background = '#227A15';
     setTimeout(() => { statusEl.remove(); }, 3000);
   } catch(err) {
+    clearTimeout(timeoutId);
     statusEl.textContent = 'GitHub sync failed: ' + err.message;
     statusEl.style.background = '#E2231A';
     setTimeout(() => { statusEl.remove(); }, 6000);

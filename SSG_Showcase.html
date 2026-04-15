@@ -551,9 +551,6 @@ body.edit-mode .add-l2-cell { display: flex; }
   position: relative; z-index: 10;
 }
 
-/* ── SYNC SPINNER ── */
-@keyframes spin { to { transform: rotate(360deg); } }
-#gh-sync-spinner svg { animation: spin 0.8s linear infinite; transform-box: fill-box; transform-origin: center; }
 
 /* ── LENOVO BADGE — fixed right side ── */
 .lenovo-badge {
@@ -782,10 +779,6 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
     <span class="ftr-note">Lenovo Digitalization Team · AI Showcase · Since March 2026</span>
     <button class="site-edit-btn site-edit-btn--ftr" onclick="openEM('site-ftr')" title="Edit footer text">✏</button>
     <span class="ftr-count" id="ftr-count"><span>34</span> demos</span>
-    <span id="gh-sync-spinner" style="display: inline; margin-left: 8px; vertical-align: middle;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#227A15" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10" opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10" style="animation:spin 0.8s linear infinite;transform-origin:center"></path></svg>
-    </span>
-    <span id="gh-sync-ok" style="display:none;margin-left:8px;color:#227A15;font-size:14px">✓</span>
   </footer>
 
 </div>
@@ -1625,12 +1618,8 @@ async function autoSaveToGitHub() {
   const cfg = getGhConfig();
   const token = cfg && cfg.token;
   if (!token) return;
-  const spinner = document.getElementById('gh-sync-spinner');
-  const okMark = document.getElementById('gh-sync-ok');
-  if (spinner) spinner.style.display = 'inline';
-  if (okMark) okMark.style.display = 'none';
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => { controller.abort(); if (spinner) spinner.style.display = 'none'; }, 10000);
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
   try {
     const owner = cfg && cfg.owner || GH.owner;
     const repo = cfg && cfg.repo || GH.repo;
@@ -1640,52 +1629,42 @@ async function autoSaveToGitHub() {
       headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' },
       signal: controller.signal
     });
-    let sha = null;
+    if (!getRes.ok && getRes.status !== 404) {
+      clearTimeout(timeoutId);
+      return;
+    }
     if (getRes.ok) {
       const data = await getRes.json();
-      sha = data.sha;
-    } else if (getRes.status !== 404) {
-      throw new Error('GitHub fetch failed: ' + getRes.status);
+      // Remove injected extension elements before capturing source
+      document.querySelectorAll('#bottomBar, editor-card, [style*="chrome-extension://"]').forEach(el => el.remove());
+      const exportObj = { root: treeData.root, l2: treeData.l2, siteTitle, siteSub, siteFtr };
+      const newDefault = JSON.stringify(exportObj, null, 2);
+      const reBlock = new RegExp('const DEFAULT_DATA = \\{[\\s\\S]*?\\n\\};\\s*\\n', 'm');
+      const src = document.documentElement.outerHTML;
+      if (!reBlock.test(src)) { clearTimeout(timeoutId); return; }
+      const newSrc = src.replace(reBlock, 'const DEFAULT_DATA = ' + newDefault + ';\n');
+      const encContent = btoa(unescape(encodeURIComponent(newSrc)));
+      const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${gpath}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'token ' + token,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Auto-sync from web editor [' + new Date().toISOString().slice(0,16) + ']',
+          content: encContent,
+          branch: branch,
+          sha: data.sha
+        }),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
     }
-// Remove injected extension elements before capturing source
-    document.querySelectorAll('#bottomBar, editor-card, [style*="chrome-extension://"]').forEach(el => el.remove());
-    const exportObj = { root: treeData.root, l2: treeData.l2, siteTitle, siteSub, siteFtr };
-    const newDefault = JSON.stringify(exportObj, null, 2);
-    const reBlock = new RegExp('const DEFAULT_DATA = \\{[\\s\\S]*?\\n\\};\\s*\\n', 'm');
-    const src = document.documentElement.outerHTML;
-    if (!reBlock.test(src)) throw new Error('DEFAULT_DATA block not found');
-    const newSrc = src.replace(reBlock, 'const DEFAULT_DATA = ' + newDefault + ';\n');
-    const encContent = btoa(unescape(encodeURIComponent(newSrc)));
-    const putRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${gpath}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'token ' + token,
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: 'Auto-sync from web editor [' + new Date().toISOString().slice(0,16) + ']',
-        content: encContent,
-        branch: branch,
-        sha
-      }),
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    if (!putRes.ok) {
-      const err = await putRes.json();
-      throw new Error(err.message || 'GitHub API error ' + putRes.status);
-    }
-    if (spinner) spinner.style.display = 'none';
-    if (okMark) { okMark.style.display = 'inline'; setTimeout(() => { okMark.style.display = 'none'; }, 3000); }
   } catch(err) {
     clearTimeout(timeoutId);
-    if (spinner) spinner.style.display = 'none';
-    console.error('GitHub sync failed:', err.message);
   }
 }
-
-/* ── Export: bake current data into HTML, download updated file ── */
 function exportData() {
   try {
     // Build new DEFAULT_DATA string from current localStorage state

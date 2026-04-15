@@ -553,7 +553,7 @@ body.edit-mode .add-l2-cell { display: flex; }
 
 /* ── SYNC SPINNER ── */
 @keyframes spin { to { transform: rotate(360deg); } }
-#gh-sync-spinner svg path { transform-origin: 12px 12px; }
+#gh-sync-spinner svg { animation: spin 0.8s linear infinite; transform-box: fill-box; transform-origin: center; }
 
 /* ── LENOVO BADGE — fixed right side ── */
 .lenovo-badge {

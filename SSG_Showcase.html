@@ -1638,7 +1638,8 @@ async function autoSaveToGitHub() {
     }
     if (getRes.ok) {
       const data = await getRes.json();
-      // Remove injected extension/CRX elements
+      // Remove injected extension/CRX elements and clean body class
+      document.body.classList.remove('edit-mode');
       document.querySelectorAll('#bottomBar, editor-card, scribe-shadow, [data-crx]').forEach(el => el.remove());
       // Remove toast divs injected by extensions
       var toRemove = [];

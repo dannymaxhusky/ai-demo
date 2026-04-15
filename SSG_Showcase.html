@@ -1309,7 +1309,7 @@ function loadData() {
     }
   } catch(e) { localStorage.removeItem('ssg-v6'); treeData = dc(DEFAULT_DATA); }
 }
-function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); autoSaveToGitHub(); }
+function saveData() { localStorage.setItem('ssg-v6', JSON.stringify(treeData)); try { autoSaveToGitHub(); } catch(e) { console.error('autoSaveToGitHub error:', e); } }
 loadData();
 let editMode = false, activeFilter = 'all', cardNums = {};
 document.body.classList.remove('edit-mode'); // ensure view mode on load
@@ -1549,13 +1549,10 @@ async function autoSaveToGitHub() {
     }
     const exportObj = { root: treeData.root, l2: treeData.l2, siteTitle, siteSub, siteFtr };
     const newDefault = JSON.stringify(exportObj, null, 2);
-    const reBlock = /const DEFAULT_DATA = \{[\s\S]*?
-};\s*
-/m;
+    const reBlock = new RegExp('const DEFAULT_DATA = \\{[\\s\\S]*?\\n\\};\\s*\\n', 'm');
     const src = document.documentElement.outerHTML;
     if (!reBlock.test(src)) throw new Error('DEFAULT_DATA block not found');
-    const newSrc = src.replace(reBlock, 'const DEFAULT_DATA = ' + newDefault + ';
-');
+    const newSrc = src.replace(reBlock, 'const DEFAULT_DATA = ' + newDefault + ';\n');
     const encContent = btoa(unescape(encodeURIComponent(newSrc)));
     const putRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, {
       method: 'PUT',

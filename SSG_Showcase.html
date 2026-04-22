@@ -214,6 +214,23 @@ body.edit-mode .h-reset { display: inline-flex; }
 .f-chip:hover { color: var(--ink); border-color: var(--ink-3); }
 .f-chip-active-all,
 .f-chip-active-team { background: var(--ink) !important; border-color: var(--ink) !important; color: #fff !important; }
+/* Filter chip tooltip */
+.f-chip[data-tooltip] { position: relative; }
+.f-chip[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  background: #1a1a1a; color: #f0f0f0; font-size: 11px; font-weight: 400; line-height: 1.5;
+  padding: 8px 12px; border-radius: 8px; white-space: pre-wrap; width: 260px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2); pointer-events: none;
+  opacity: 0; transition: opacity 0.15s; z-index: 999;
+}
+.f-chip[data-tooltip]::before {
+  content: ''; position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: #1a1a1a;
+  pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 999;
+}
+.f-chip[data-tooltip]:hover::after,
+.f-chip[data-tooltip]:hover::before { opacity: 1; }
 
 /* AI Tag Legend */
 .f-legend {
@@ -928,7 +945,10 @@ const DEFAULT_DATA = {
               "desc": "Smartfind AI Translation was created to replace the old manual and vendor-based translation process, which was costly, slow, and difficult to scale across multiple countries and languages. With this new capability, Smartfind can now automatically translate both service strings on pages and service-related files such as brochures and T&Cs in formats like Word, PowerPoint, Excel, PDF, and TXT. The solution uses AI to improve efficiency and reduce external translation costs, while still keeping Geo Team review as the final quality checkpoint to ensure translation accuracy.",
               "demo": "",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_cu1o1nz",
@@ -936,7 +956,10 @@ const DEFAULT_DATA = {
               "desc": "Enable Super agent cross sales tools/platforms, including highspot, D365, LPC, Smartfind AI chatbot to bring more sellers user-friendly experiences",
               "demo": "",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_wcj9n27",
@@ -944,7 +967,10 @@ const DEFAULT_DATA = {
               "desc": "APOS Sales Support AI (AI Case management and Create Oppty & Quote, AI Special bid and entitlement approvals).$1,582k in 3-year savings to repurpose 14 headcount*",
               "demo": "",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_o707i19",
@@ -952,7 +978,10 @@ const DEFAULT_DATA = {
               "desc": "Expand the AI recommendation tech into ISG process, it increase the sellers / partners experience and productivities - To be moved under BAU APOS  CDP/PQ (CDP is ISG, PQ is IDG). Medabase solution )",
               "demo": "",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_gx3rabz",
@@ -960,15 +989,21 @@ const DEFAULT_DATA = {
               "desc": "Agentic AI to reduce transactional deal governance tasks and deliver a streamlined solutioning and pricing process for transactional G2a opportunities",
               "demo": "",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_0xvphmn",
-              "name": "GPT Cost",
+              "name": "GPS Cost",
               "desc": "The GPS Cost Pricing Workbench automates and streamlines sales cost and list price calculations, enabling fast, accurate, and customizable pricing with easy data integration and business system compatibility",
               "demo": "demo_GPS.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         },
@@ -983,7 +1018,10 @@ const DEFAULT_DATA = {
               "desc": "The Concord MSPO tool offers centralized project management, automated approvals, integrated document handling, and real-time analytics to enhance efficiency and transparency in offering development.",
               "demo": "demo_concornMSPO.mp4",
               "ai": "red",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_f9plf83",
@@ -991,7 +1029,10 @@ const DEFAULT_DATA = {
               "desc": "Expand the AI recommendation tech into ISG process via DCSC catalog, it increase the sellers / partners experience and productivities",
               "demo": "",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         }
@@ -1012,7 +1053,10 @@ const DEFAULT_DATA = {
               "desc": "One-off Extraction of POD Information Based on Convolutional Neural Networks and filtering algorithm, dirving auto conveyor operates",
               "demo": "demo_XODCK_AIPOD.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_ihqsmrv",
@@ -1020,7 +1064,10 @@ const DEFAULT_DATA = {
               "desc": "AI-powered FRU part identification tool with high accuracy and faster diagnostics.",
               "demo": "demo_AIFRUFinder.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_fhrcyrg",
@@ -1028,7 +1075,10 @@ const DEFAULT_DATA = {
               "desc": "The product uses AI-Powered real-time checkpoints - barcode and MacID validation, an intelligent web portal for abnormal cases, and agent alerts to quickly detect and prevent warranty fraud and losses..",
               "demo": "demo_AntiWTY.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_itgmyvz",
@@ -1036,7 +1086,10 @@ const DEFAULT_DATA = {
               "desc": "live interception platform to detect parts operation exception",
               "demo": "demo_LIP.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_d6fwatj",
@@ -1044,7 +1097,10 @@ const DEFAULT_DATA = {
               "desc": "AI logistics partner: unifies data and workflows in one interface for efficiency, integration and scalability.",
               "demo": "demo_LogiAgent.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         },
@@ -1059,7 +1115,10 @@ const DEFAULT_DATA = {
               "desc": "AI Powered Platform to Support SSG Service Procurement Source to Award Business",
               "demo": "demo_TonkeanAI.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_7vekisv",
@@ -1067,7 +1126,10 @@ const DEFAULT_DATA = {
               "desc": "AI-Powered Billing Validation Analytics and invoice OCR Function Enablement",
               "demo": "demo_BillingValidationl.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         },
@@ -1079,34 +1141,46 @@ const DEFAULT_DATA = {
             {
               "id": "_fv3k5bf",
               "name": "LENA Chatbot",
-              "desc": "* Enhance RoW Service LENA (PC) & MOLI (MBG) chatbot to a LLM powered chatbot to improve CX, lower down Transfer Rate and generate more APOS sales.",
+              "desc": "Enhance RoW Service LENA (PC) & MOLI (MBG) chatbot to a LLM powered chatbot to improve CX, lower down Transfer Rate and generate more APOS sales.",
               "demo": "demo_LENA.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_lzwaj87",
               "name": "MS D365 OC-Chat Copilot",
-              "desc": "* Leverage D365 Copilot, Summray, Chat content draft and knowledge search to empower CEC Agent productivity.  * Enable AI Real-time Translation to enable CEC agent Cross-language support.",
+              "desc": "Leverage D365 Copilot, Summary, Chat content draft and knowledge search to empower CEC Agent productivity. Enable AI Real-time Translation to enable CEC agent Cross-language support.",
               "demo": "demo_MSOCCHAT.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_j4cwlnf",
               "name": "Email Bot",
-              "desc": "* Build Email Bot solution to assist agents to decrease email handling time and volume, achieve cost saving without impacting CX",
+              "desc": "Build Email Bot solution to assist agents to decrease email handling time and volume, achieve cost saving without impacting CX",
               "demo": "demo_EmailBot.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_37xpe15",
               "name": "IVA Intelligent Voice Agent & IVR Bot",
-              "desc": "* Enable a Voice AI Agent with near-human interaction capabilities​ * Reduce human workload by handling tasks across complexity levels:​    - Simple inquiries (e.g., CCI Location Check, Status Check)​    - Complex tasks (e.g., HOWTO FAQ guidance, step-by-step troubleshooting decision trees)​    - Support real-world voice conversations that are non-linear, dynamic, and context-shifting​ * Build up an IVR Voice Bot fully leverage AI technology: ASR, NLP, and Bot Framework in Top-8 langues that support 70% customer voice call to lower down contact effort & optimize Agent support process.",
+              "desc": "Enable a Voice AI Agent with near-human interaction capabilities. Reduce human workload by handling tasks across complexity levels: Simple inquiries, Complex tasks (HOWTO FAQ, troubleshooting), and real-world voice conversations. Build IVR Voice Bot leveraging ASR, NLP, and Bot Framework in Top-8 languages supporting 70% customer voice calls.",
               "demo": "demo_IVA.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_exo0jsc",
@@ -1114,31 +1188,43 @@ const DEFAULT_DATA = {
               "desc": "Enable Lenovo RoW Service Voice Channel Real-time Agent Assist to summarize Voice Transcript, Auto fill-in Case / WO content, and offer Agent a real-time action notification (Next Best Action) that simplify Agent's after-call-wrap tasks, and improve the Agent's during the call efficiency per AI advise.",
               "demo": "",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_8yz9zr3",
               "name": "AIPD Problem Determination",
-              "desc": "AI Powered PD tool * Enable PD in a real-time Agent/Customer conversational, to accelerate Agent’s Technical troubleshooting efficiency and accuracy * Enable NBA backend engine to support project D.",
+              "desc": "AI Powered PD tool: Enable PD in a real-time Agent/Customer conversational to accelerate Agent's Technical troubleshooting efficiency and accuracy. Enable NBA backend engine to support project D.",
               "demo": "",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_5yur6li",
               "name": "ChatBI",
-              "desc": "ISS Operation Chat BI is an AI-powered business intelligence platform that transforms how teams interact with data. Using natural language processing, users can effortlessly ask questions, generate reports, and uncover insights through simple conversational queries - no coding or technical expertise required. The tool connects not only Project X operational KPI data, but LSUMP cost data (TBD).",
+              "desc": "ISS Operation Chat BI is an AI-powered business intelligence platform that transforms how teams interact with data. Using natural language processing, users can effortlessly ask questions, generate reports, and uncover insights through simple conversational queries - no coding or technical expertise required.",
               "demo": "",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_xuoxg7j",
               "name": "Self Repair & Fraud Prevention (Field Service)",
-              "desc": "This project focuses on driving higher volumes toward self-repair while simplifying the entire self-repair process to ensure it is accessible and achievable for all users. Key workstreams include leveraging AI and DFS to increase adoption of self-repair, converting more conventional repair scenarios into self-repairable ones, and optimizing the experience to make self-repair straightforward and user-friendly.",
+              "desc": "This project focuses on driving higher volumes toward self-repair while simplifying the entire self-repair process. Key workstreams include leveraging AI and DFS to increase adoption of self-repair, converting more conventional repair scenarios into self-repairable ones, and optimizing the experience to make self-repair straightforward and user-friendly.",
               "demo": "",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_gr03q98",
@@ -1146,7 +1232,10 @@ const DEFAULT_DATA = {
               "desc": "Utilize AI Bot as main outbound player, automate outbound process, and shift volume to social Chat.",
               "demo": "",
               "ai": "red",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         }
@@ -1164,18 +1253,24 @@ const DEFAULT_DATA = {
             {
               "id": "_2xx2833",
               "name": "Agentic Intelligent Resolver",
-              "desc": "The Agentic Intelligent Resolver (AIR) represents a groundbreaking innovation in customer support automation, delivers seamless, end-to-end issue resolution for customers while driving operational efficiency and cost savings. As the first Agentic AI Agent deployed in ISS ecosystem, AIR harmonizes multiple service channels into a unified, intelligent experience. Building advanced AI capabilities and leveraging existing tools such as the Problem Diagnostic Agent, Unified Knowledge Management, Address Validation Agent, Entitlement Agent,  Work Order agent, and FRU Finder",
+              "desc": "The Agentic Intelligent Resolver (AIR) represents a groundbreaking innovation in customer support automation, delivers seamless, end-to-end issue resolution for customers while driving operational efficiency and cost savings. As the first Agentic AI Agent deployed in ISS ecosystem, AIR harmonizes multiple service channels into a unified, intelligent experience.",
               "demo": "AIR.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_v3q5nk6",
               "name": "AI One Language Community",
-              "desc": "AI One Language Community transforms customer experience and breakthroughs the language barrier between different countries, supporting 22 languages , centralizes the operation, deliver the excellent content quality.",
+              "desc": "AI One Language Community transforms customer experience and breakthroughs the language barrier between different countries, supporting 22 languages, centralizes the operation, deliver the excellent content quality.",
               "demo": "AIOLC.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_8ydr64n",
@@ -1183,7 +1278,10 @@ const DEFAULT_DATA = {
               "desc": "AI invoice recognition & processing for OACP, LGAP, Ariba, LSUMP, SDMS.",
               "demo": "demo_smart_p2p.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_v9xqvu9",
@@ -1191,7 +1289,10 @@ const DEFAULT_DATA = {
               "desc": "The product streamlines project-based service delivery by automating deal governance, cost modeling, project management and project accounting through the D365 MSPO system",
               "demo": "demo_PSDUser.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_a25qqyh",
@@ -1199,7 +1300,10 @@ const DEFAULT_DATA = {
               "desc": "Project Intelligent Service Assistant. AI-powered agent built natively inside MSPO to transform project delivery and project accounting across the full lifecycle.",
               "demo": "demo_PISA.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         }
@@ -1220,7 +1324,10 @@ const DEFAULT_DATA = {
               "desc": "AI-built programs scan thousands of invoice pages in one second.",
               "demo": "demo_bulk_invoice_checker.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "p2",
@@ -1228,7 +1335,10 @@ const DEFAULT_DATA = {
               "desc": "Reconstruct bundle billing prices for any historical period.",
               "demo": "demo_historical_bundle_price_calculator.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "p3",
@@ -1236,7 +1346,10 @@ const DEFAULT_DATA = {
               "desc": "Cross-reference multiple tables to identify data discrepancies.",
               "demo": "demo_migration_data_validator.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         },
@@ -1251,7 +1364,10 @@ const DEFAULT_DATA = {
               "desc": "Built-in algorithm, auto-fetches BondRate, generates PDF quotes.",
               "demo": "demo_web_lgfs_quotation_tool.mp4",
               "ai": "red",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "p6",
@@ -1259,7 +1375,10 @@ const DEFAULT_DATA = {
               "desc": "Automatically calculate buyout prices at lease maturity.",
               "demo": "demo-Buyout.mp4",
               "ai": "red",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         },
@@ -1274,7 +1393,10 @@ const DEFAULT_DATA = {
               "desc": "Dynamic visualization, export support, mobile inventory intake.",
               "demo": "demo_rdaas_eol_dashboard.mp4",
               "ai": "red",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "p8",
@@ -1282,7 +1404,10 @@ const DEFAULT_DATA = {
               "desc": "Visualize report data sources and structures for rapid issue diagnosis.",
               "demo": "demo_funded_volume_report_dataflow.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         }
@@ -1303,7 +1428,10 @@ const DEFAULT_DATA = {
               "desc": "An AI-powered platform for centralized ISS knowledge creation, search, and sharing.",
               "demo": "demo_ISS_UKM.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_hipac8q",
@@ -1311,7 +1439,10 @@ const DEFAULT_DATA = {
               "desc": "Your AI-powered assistant that streamlines SSG knowledge into a single, powerful, easy-to-use platform, helping users get more done, faster.",
               "demo": "demo_AIESA.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         },
@@ -1326,7 +1457,10 @@ const DEFAULT_DATA = {
               "desc": "ProvisionNow AI enables natural language queries and real-time visibility across the end-to-end ProvisionNow deployment lifecycle",
               "demo": "demo_ProvisionNow.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_4k1pw1g",
@@ -1334,7 +1468,10 @@ const DEFAULT_DATA = {
               "desc": "AI-powered BI for natural language data queries and insights",
               "demo": "demo_ISSChatbi.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_tg69ozw",
@@ -1342,7 +1479,10 @@ const DEFAULT_DATA = {
               "desc": "AI platform that enables natural language queries for SSG sales-related data",
               "demo": "demo_SSGSalesOpsAgent.mp4",
               "ai": "green",
-              "star": false
+              "star": false,
+              "agentType": "team",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         },
@@ -1357,7 +1497,10 @@ const DEFAULT_DATA = {
               "desc": "A AI-Build tool help to recommand the mapping from 193 BPH to 1899 BCPF",
               "demo": "demo_BPH_BCPF.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             },
             {
               "id": "_7957w1o",
@@ -1365,7 +1508,10 @@ const DEFAULT_DATA = {
               "desc": "A project management tool enabling end-to-end oversight of scope, budget, timeline, and execution status, with integrated BCPF change point mapping, KPI tracking, and automated generation of executive review materials. This tool can improve overall project transparency and cross team coloration efficiency.",
               "demo": "demo_PM.mp4",
               "ai": "blue",
-              "star": false
+              "star": false,
+              "agentType": "personal",
+              "costSaving": null,
+              "efficiency": null
             }
           ]
         }
@@ -1475,8 +1621,12 @@ function renderFilterBar() {
   bar.appendChild(makeChip('★ Has Demo', 'hasDemo', 'filter', activeFilter === 'hasDemo'));
   bar.appendChild(makeChip('★ Starred', 'hasStar', 'filter', activeFilter === 'hasStar'));
   bar.appendChild(fsep());
-  bar.appendChild(makeChip('⚙ Personal Agent', 'personal', 'agent', activeFilter === 'personal', { main: '#6366F1', light: '#EEF2FF' }));
-  bar.appendChild(makeChip('👥 Team Agent', 'team-agent', 'agent', activeFilter === 'team-agent', { main: '#EA580C', light: '#FFF7ED' }));
+  const pChip = makeChip('⚙ Personal Agent', 'personal', 'agent', activeFilter === 'personal', { main: '#6366F1', light: '#EEF2FF' });
+  pChip.dataset.tooltip = 'Personal Agent\nA lightweight, AI-built utility requiring no complex deployment.\nRuns locally and fully offline — zero data transmitted externally.';
+  bar.appendChild(pChip);
+  const tChip = makeChip('👥 Team Agent', 'team-agent', 'agent', activeFilter === 'team-agent', { main: '#EA580C', light: '#FFF7ED' });
+  tChip.dataset.tooltip = 'Team Agent\nAn AI-powered tool for multi-user online collaboration.\nRequires formal deployment & security approval.\nSome features invoke LLM APIs for intelligent functionality.';
+  bar.appendChild(tChip);
   if (editMode) {
     bar.appendChild(fsep());
     const a = el('button', 'add-chip-btn'); a.textContent = '+ Team';

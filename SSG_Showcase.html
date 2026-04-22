@@ -435,6 +435,17 @@ body.edit-mode .ai-tag.ai-none   { cursor: pointer; border: 1.5px dashed var(--b
 .ai-blue  { background: #3B82F6; }
 .ai-green { background: #22C55E; }
 .ai-red   { background: #EF4444; }
+/* Agent type tag */
+.agent-tag { display:inline-flex;align-items:center;padding:1px 6px;border-radius:var(--r-pill);font-size:8px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;flex-shrink:0; }
+.agent-personal { background:#EEF2FF;color:#4F46E5;border:1px solid #C7D2FE; }
+.agent-team     { background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA; }
+/* Agent type selector in edit modal */
+.agent-row { display:flex;gap:6px;flex-wrap:wrap; }
+.asw { padding:4px 12px;border-radius:var(--r-pill);font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg);color:var(--ink-3);transition:all .15s; }
+.asw:hover { border-color:var(--ink-3); }
+.asw.sel.sel-none     { background:var(--bg);border-color:var(--ink-3);color:var(--ink-2); }
+.asw.sel.sel-personal { background:#EEF2FF;border-color:#6366F1;color:#4F46E5; }
+.asw.sel.sel-team     { background:#FFF7ED;border-color:#EA580C;color:#C2410C; }
 .star-tag {
   flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
   width: 17px; height: 17px; border-radius: 50%;
@@ -1451,7 +1462,7 @@ function renderFooter() {
   let total = 0, visible = 0;
   treeData.l2.forEach(l2 => l2.l3.forEach(l3 => l3.l4.forEach(l4 => {
     total++;
-    if (activeFilter === 'all' || (activeFilter === 'hasDemo' && l4.demo) || (activeFilter === 'hasStar' && l4.star)) visible++;
+    if (activeFilter === 'all' || (activeFilter === 'hasDemo' && l4.demo) || (activeFilter === 'hasStar' && l4.star) || (activeFilter === 'personal' && l4.agentType === 'personal') || (activeFilter === 'team-agent' && l4.agentType === 'team')) visible++;
   })));
   document.getElementById('ftr-count').innerHTML = visible === total
     ? '<span>' + total + '</span> demos'
@@ -1463,6 +1474,9 @@ function renderFilterBar() {
   bar.appendChild(makeChip('All', 'all', 'all', activeFilter === 'all'));
   bar.appendChild(makeChip('★ Has Demo', 'hasDemo', 'filter', activeFilter === 'hasDemo'));
   bar.appendChild(makeChip('★ Starred', 'hasStar', 'filter', activeFilter === 'hasStar'));
+  bar.appendChild(fsep());
+  bar.appendChild(makeChip('⚙ Personal Agent', 'personal', 'agent', activeFilter === 'personal', { main: '#6366F1', light: '#EEF2FF' }));
+  bar.appendChild(makeChip('👥 Team Agent', 'team-agent', 'agent', activeFilter === 'team-agent', { main: '#EA580C', light: '#FFF7ED' }));
   if (editMode) {
     bar.appendChild(fsep());
     const a = el('button', 'add-chip-btn'); a.textContent = '+ Team';
@@ -1555,7 +1569,7 @@ function makeL3Group(l3, l2, i2, i3) {
   };
   if (l3.l4.length === 0) { const empty = el('div', 'l2-empty'); empty.textContent = '—'; cards.appendChild(empty); }
   else l3.l4.forEach((l4, i4) => {
-    const show = activeFilter === 'all' || (activeFilter === 'hasDemo' && l4.demo) || (activeFilter === 'hasStar' && l4.star);
+    const show = activeFilter === 'all' || (activeFilter === 'hasDemo' && l4.demo) || (activeFilter === 'hasStar' && l4.star) || (activeFilter === 'personal' && l4.agentType === 'personal') || (activeFilter === 'team-agent' && l4.agentType === 'team');
     const card = makeCard(l4, l2, i2, i3, i4, c);
     if (!show) card.style.display = 'none';
     cards.appendChild(card);
@@ -1585,6 +1599,7 @@ function makeCard(l4, l2, i2, i3, i4, c) {
     }
     row.appendChild(t);
   }
+  if (l4.agentType) { const at = el('span', 'agent-tag agent-' + l4.agentType); at.textContent = l4.agentType === 'personal' ? 'Personal' : 'Team'; row.appendChild(at); }
   if (l4.costSaving) { const m = el('span', 'metric-tag metric-cost'); m.textContent = 'US$ ' + l4.costSaving; row.appendChild(m); }
   if (l4.efficiency) { const m = el('span', 'metric-tag metric-eff'); m.textContent = l4.efficiency + '%'; row.appendChild(m); }
   top.appendChild(row); card.appendChild(top);
@@ -1864,8 +1879,8 @@ function openEM(type, i2, i3, i4) {
   else if (type === 'l2-new') { title.textContent = 'Add Team'; lv.textContent = 'Team'; body.appendChild(tf('name', 'Team Name', '')); }
   else if (type === 'l3') { const l3 = treeData.l2[i2].l3[i3]; title.textContent = 'Edit Group'; lv.textContent = 'Group'; body.appendChild(tf('name', 'Group Name', l3.name)); body.appendChild(cf('colorKey', l3.colorKey)); }
   else if (type === 'l3-new') { title.textContent = 'Add Group'; lv.textContent = 'Group'; body.appendChild(l2sel('l2pick', 'Add to Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(tf('name', 'Group Name', '')); body.appendChild(cf('colorKey', 'blue')); }
-  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; title.textContent = 'Edit Card'; lv.textContent = 'Card'; body.appendChild(tf('name', 'Project Name', l4.name)); body.appendChild(taf('desc', 'Description', l4.desc || '')); body.appendChild(aiCf('ai', l4.ai)); body.appendChild(tf('demo', 'Demo Video Filename', l4.demo || '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', l4.costSaving, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', l4.efficiency, '')); body.appendChild(tg('star', '★ Star / Best Solution', !!l4.star)); }
-  else if (type === 'l4-new') { title.textContent = 'Add Card'; lv.textContent = 'Card'; body.appendChild(l2sel('l2pick', 'Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(l3sel('l3pick', 'Group', i2 !== undefined ? treeData.l2[i2].id : '', i3 !== undefined ? treeData.l2[i2].l3[i3].id : '')); body.appendChild(tf('name', 'Project Name', '')); body.appendChild(taf('desc', 'Description', '')); body.appendChild(aiCf('ai', 'blue')); body.appendChild(tf('demo', 'Demo Video Filename', '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', undefined, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', undefined, '')); body.appendChild(tg('star', '★ Star / Best Solution', false)); }
+  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; title.textContent = 'Edit Card'; lv.textContent = 'Card'; body.appendChild(tf('name', 'Project Name', l4.name)); body.appendChild(taf('desc', 'Description', l4.desc || '')); body.appendChild(aiCf('ai', l4.ai)); body.appendChild(agentTypef('agentType', l4.agentType || '')); body.appendChild(tf('demo', 'Demo Video Filename', l4.demo || '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', l4.costSaving, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', l4.efficiency, '')); body.appendChild(tg('star', '★ Star / Best Solution', !!l4.star)); }
+  else if (type === 'l4-new') { title.textContent = 'Add Card'; lv.textContent = 'Card'; body.appendChild(l2sel('l2pick', 'Team', i2 !== undefined ? treeData.l2[i2].id : '')); body.appendChild(l3sel('l3pick', 'Group', i2 !== undefined ? treeData.l2[i2].id : '', i3 !== undefined ? treeData.l2[i2].l3[i3].id : '')); body.appendChild(tf('name', 'Project Name', '')); body.appendChild(taf('desc', 'Description', '')); body.appendChild(aiCf('ai', 'blue')); body.appendChild(agentTypef('agentType', '')); body.appendChild(tf('demo', 'Demo Video Filename', '')); body.appendChild(tn('costSaving', 'Cost Saving (US$)', undefined, 'US$ ')); body.appendChild(tn('efficiency', 'Efficiency Improvement (%)', undefined, '')); body.appendChild(tg('star', '★ Star / Best Solution', false)); }
   else if (type === 'site-hdr') { title.textContent = 'Edit Header'; lv.textContent = 'Site'; body.appendChild(tf('hdrTitle', 'Left Text', siteTitle)); body.appendChild(tf('hdrSub', 'Right Text (subtitle)', siteSub)); }
   else if (type === 'site-ftr') { title.textContent = 'Edit Footer'; lv.textContent = 'Site'; body.appendChild(tf('ftrNote', 'Footer Text', siteFtr)); }
   document.getElementById('em-overlay').classList.add('open');
@@ -1904,7 +1919,21 @@ function aiCf(id, sel) {
 function l2sel(id, label, defaultL2Id) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const sel = document.createElement('select'); sel.id = 'em-' + id; treeData.l2.forEach(l2 => { const o = document.createElement('option'); o.value = l2.id; o.textContent = l2.name; if (l2.id === defaultL2Id) o.selected = true; sel.appendChild(o); }); w.appendChild(sel); return w; }
 function l3sel(id, label, l2id, defaultL3Id) { const w = el('div', 'em-field'); w.appendChild(document.createElement('label')).textContent = label; const sel = document.createElement('select'); sel.id = 'em-' + id; const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) team.l3.forEach(l3 => { const o = document.createElement('option'); o.value = l3.id; o.textContent = l3.name; if (l3.id === defaultL3Id) o.selected = true; sel.appendChild(o); }); w.appendChild(sel); return w; }
 
-function gf(id) { const e = document.getElementById('em-' + id); if (!e) return ''; if (e.classList.contains('tsw')) return e.dataset.v === '1'; if (e.classList.contains('color-row')) { const s = e.querySelector('.csw.sel'); return s ? s.dataset.c : 'blue'; } if (e.type === 'number') return e.value === '' ? null : e.value; return e.value.trim(); }
+function agentTypef(id, sel) {
+  const OPTS = [{ v: '', label: '— None' }, { v: 'personal', label: '⚙ Personal Agent' }, { v: 'team', label: '👥 Team Agent' }];
+  const w = el('div', 'em-field');
+  w.appendChild(document.createElement('label')).textContent = 'Agent Type';
+  const row = el('div', 'agent-row'); row.id = 'em-' + id;
+  OPTS.forEach(opt => {
+    const selClass = opt.v === '' ? 'sel-none' : 'sel-' + opt.v;
+    const btn = el('button', 'asw' + ((sel || '') === opt.v ? ' sel ' + selClass : ''));
+    btn.dataset.v = opt.v; btn.textContent = opt.label;
+    btn.onclick = e => { e.preventDefault(); row.querySelectorAll('.asw').forEach(b => b.className = 'asw'); btn.className = 'asw sel ' + selClass; };
+    row.appendChild(btn);
+  });
+  w.appendChild(row); return w;
+}
+function gf(id) { const e = document.getElementById('em-' + id); if (!e) return ''; if (e.classList.contains('tsw')) return e.dataset.v === '1'; if (e.classList.contains('agent-row')) { const s = e.querySelector('.asw.sel'); return s ? s.dataset.v : ''; } if (e.classList.contains('color-row')) { const s = e.querySelector('.csw.sel'); return s ? s.dataset.c : 'blue'; } if (e.type === 'number') return e.value === '' ? null : e.value; return e.value.trim(); }
 
 function saveEM() {
   const { type, i2, i3, i4 } = emCtx;
@@ -1912,8 +1941,8 @@ function saveEM() {
   else if (type === 'l2-new') { const n = gf('name'); if (n) treeData.l2.push({ id: uid(), name: n, l3: [] }); }
   else if (type === 'l3') { const l3 = treeData.l2[i2].l3[i3]; const n = gf('name'); if (n) l3.name = n; l3.colorKey = gf('colorKey') || l3.colorKey; }
   else if (type === 'l3-new') { const n = gf('name'); const l2id = gf('l2pick'); if (n) { const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) team.l3.push({ id: uid(), name: n, colorKey: gf('colorKey') || 'blue', l4: [] }); } }
-  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; const n = gf('name'); if (n) l4.name = n; l4.desc = gf('desc'); l4.ai = gf('ai'); l4.demo = gf('demo'); l4.star = gf('star'); l4.costSaving = gf('costSaving') || null; l4.efficiency = gf('efficiency') || null; }
-  else if (type === 'l4-new') { const n = gf('name'); if (!n) { closeEM(); return; } const l2id = gf('l2pick'); const l3id = gf('l3pick'); const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) { const grp = team.l3.find(g => g.id === l3id) || team.l3[0]; if (grp) grp.l4.push({ id: uid(), name: n, desc: gf('desc'), ai: gf('ai'), demo: gf('demo'), star: gf('star'), costSaving: gf('costSaving') || null, efficiency: gf('efficiency') || null }); } }
+  else if (type === 'l4') { const l4 = treeData.l2[i2].l3[i3].l4[i4]; const n = gf('name'); if (n) l4.name = n; l4.desc = gf('desc'); l4.ai = gf('ai'); l4.agentType = gf('agentType'); l4.demo = gf('demo'); l4.star = gf('star'); l4.costSaving = gf('costSaving') || null; l4.efficiency = gf('efficiency') || null; }
+  else if (type === 'l4-new') { const n = gf('name'); if (!n) { closeEM(); return; } const l2id = gf('l2pick'); const l3id = gf('l3pick'); const team = treeData.l2.find(l => l.id === l2id) || treeData.l2[0]; if (team) { const grp = team.l3.find(g => g.id === l3id) || team.l3[0]; if (grp) grp.l4.push({ id: uid(), name: n, desc: gf('desc'), ai: gf('ai'), agentType: gf('agentType'), demo: gf('demo'), star: gf('star'), costSaving: gf('costSaving') || null, efficiency: gf('efficiency') || null }); } }
   else if (type === 'site-hdr') { const t = gf('hdrTitle'); if (t) siteTitle = t; const s = gf('hdrSub'); if (s) siteSub = s; }
   else if (type === 'site-ftr') { const f = gf('ftrNote'); if (f) siteFtr = f; }
   saveData(); closeEM(); render();

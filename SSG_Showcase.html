@@ -715,6 +715,7 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
 }
 .modal-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 .modal-btn-close:hover { background: rgba(226,35,26,0.2); border-color: rgba(226,35,26,0.4); }
+.modal-btn-copy.copied { background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.4); color: #4ade80; }
 .modal-btn svg { width: 14px; height: 14px; }
 .video-wrap { position: relative; width: 100%; padding-top: 56.25%; background: #000; flex-shrink: 0; }
 .video-wrap video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
@@ -859,6 +860,12 @@ body.edit-mode .site-edit-btn { display: inline-flex; }
         <span class="modal-file" id="modal-file-text"></span>
       </div>
       <div class="modal-actions">
+        <button class="modal-btn modal-btn-copy" id="copy-link-btn" onclick="copyVideoLink()" title="复制视频直链">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+        </button>
         <button class="modal-btn" onclick="toggleFullscreen()">
           <svg id="icon-fse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline>
@@ -1925,16 +1932,46 @@ const vTitle = document.getElementById('modal-title-text');
 const vFile = document.getElementById('modal-file-text');
 
 function openVideo(f, t) {
-  // Auto-prepend mp4/ if path has no folder (backward-compat with old data)
   const src = f.includes('/') ? f : 'mp4/' + f;
-  vEl.src = src; vTitle.textContent = t; vFile.textContent = '📁 ' + f; vOverlay.classList.add('open'); videoOpen = true; vEl.load(); vEl.play().catch(() => {});
+  vEl.src = src; vTitle.textContent = t; vFile.textContent = '📁 ' + f;
+  vOverlay.classList.add('open'); videoOpen = true; vEl.load(); vEl.play().catch(() => {});
+  // Update URL hash for deep-linking
+  history.replaceState(null, '', '#demo=' + encodeURIComponent(f));
 }
-function closeVideo() { vEl.pause(); vEl.src = ''; vOverlay.classList.remove('open'); videoOpen = false; if (isFSMode) { vModal.classList.remove('is-fullscreen'); isFSMode = false; } if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); }
+function closeVideo() {
+  vEl.pause(); vEl.src = ''; vOverlay.classList.remove('open'); videoOpen = false;
+  if (isFSMode) { vModal.classList.remove('is-fullscreen'); isFSMode = false; }
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  // Clear hash
+  history.replaceState(null, '', location.pathname + location.search);
+}
+function copyVideoLink() {
+  const url = location.origin + location.pathname + location.search + location.hash;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('copy-link-btn');
+    btn.classList.add('copied');
+    btn.title = '已复制！';
+    setTimeout(() => { btn.classList.remove('copied'); btn.title = '复制视频直链'; }, 2000);
+  });
+}
 function toggleFullscreen() { if (!isFSMode) { if (vModal.requestFullscreen) vModal.requestFullscreen().then(() => { isFSMode = true; vModal.classList.add('is-fullscreen'); }).catch(() => { isFSMode = true; vModal.classList.add('is-fullscreen'); }); else { isFSMode = true; vModal.classList.add('is-fullscreen'); } } else { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); isFSMode = false; vModal.classList.remove('is-fullscreen'); } }
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && isFSMode) { isFSMode = false; vModal.classList.remove('is-fullscreen'); } });
 vOverlay.addEventListener('click', e => { if (e.target === vOverlay) closeVideo(); });
 
 render();
+
+// Deep-link: auto-open video from URL hash (#demo=filename.mp4)
+(function() {
+  const hash = location.hash;
+  if (!hash.startsWith('#demo=')) return;
+  const file = decodeURIComponent(hash.slice(6));
+  // Find matching card
+  let found = null;
+  treeData.l2.forEach(l2 => l2.l3.forEach(l3 => l3.l4.forEach(l4 => {
+    if (l4.demo && l4.demo === file) found = l4;
+  })));
+  if (found) setTimeout(() => openVideo(found.demo, found.name), 300);
+})();
 
 </script>
 

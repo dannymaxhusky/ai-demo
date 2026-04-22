@@ -214,23 +214,15 @@ body.edit-mode .h-reset { display: inline-flex; }
 .f-chip:hover { color: var(--ink); border-color: var(--ink-3); }
 .f-chip-active-all,
 .f-chip-active-team { background: var(--ink) !important; border-color: var(--ink) !important; color: #fff !important; }
-/* Filter chip tooltip */
-.f-chip[data-tooltip] { position: relative; }
-.f-chip[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-  background: #1a1a1a; color: #f0f0f0; font-size: 11px; font-weight: 400; line-height: 1.5;
-  padding: 8px 12px; border-radius: 8px; white-space: pre-wrap; width: 260px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2); pointer-events: none;
-  opacity: 0; transition: opacity 0.15s; z-index: 999;
+/* Filter chip tooltip — rendered via JS into body to escape overflow clipping */
+#chip-tooltip {
+  position: fixed; z-index: 9999; pointer-events: none;
+  background: #1a1a1a; color: #f0f0f0; font-size: 11px; font-weight: 400; line-height: 1.6;
+  padding: 9px 13px; border-radius: 9px; white-space: pre-wrap; width: 260px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  opacity: 0; transition: opacity 0.15s;
 }
-.f-chip[data-tooltip]::before {
-  content: ''; position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%);
-  border: 5px solid transparent; border-top-color: #1a1a1a;
-  pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 999;
-}
-.f-chip[data-tooltip]:hover::after,
-.f-chip[data-tooltip]:hover::before { opacity: 1; }
+#chip-tooltip.visible { opacity: 1; }
 
 /* AI Tag Legend */
 .f-legend {
@@ -2138,6 +2130,40 @@ document.addEventListener('fullscreenchange', () => { if (!document.fullscreenEl
 vOverlay.addEventListener('click', e => { if (e.target === vOverlay) closeVideo(); });
 
 render();
+
+// ── Chip tooltip (body-level, escapes f-bar overflow clipping) ──
+(function() {
+  const tip = document.createElement('div');
+  tip.id = 'chip-tooltip';
+  document.body.appendChild(tip);
+  let hideTimer;
+  document.addEventListener('mouseover', e => {
+    const chip = e.target.closest('[data-tooltip]');
+    if (!chip) return;
+    clearTimeout(hideTimer);
+    tip.textContent = chip.dataset.tooltip;
+    tip.classList.add('visible');
+    requestAnimationFrame(() => {
+      const r = chip.getBoundingClientRect();
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      // horizontal: keep within viewport
+      let left = r.left + r.width / 2 - tw / 2;
+      left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+      // vertical: prefer below if not enough room above
+      const spaceAbove = r.top;
+      const top = spaceAbove < th + 14
+        ? r.bottom + 10          // flip to below
+        : r.top - th - 10;       // default above
+      tip.style.left = left + 'px';
+      tip.style.top  = top  + 'px';
+    });
+  });
+  document.addEventListener('mouseout', e => {
+    const chip = e.target.closest('[data-tooltip]');
+    if (!chip) return;
+    hideTimer = setTimeout(() => tip.classList.remove('visible'), 80);
+  });
+})();
 
 // Deep-link: auto-open video from URL hash (#demo=filename.mp4)
 (function() {

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI Return Quality Inspection Workflow</title>
+<style>
+:root{
+  --brand:#E2231A;--brand-dk:#BE1915;--brand-lt:#FFF0EF;
+  --ink:#171717;--ink-2:#4E444E;--ink-3:#787878;--ink-4:#AAAAAA;
+  --bg:#F2F2F2;--surface:#FFFFFF;--border:#E0E0E0;--border-lt:#EFEFEF;
+  --ai-blue:#1557D0;--ai-blue-lt:#EBF1FF;
+  --font:'Noto Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --r:12px;--r-sm:8px;--r-pill:99px;
+  --sh-sm:0 1px 4px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 6px 20px rgba(0,0,0,.10);--sh-lg:0 20px 60px rgba(0,0,0,.18);
+}
+*{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);height:100dvh;overflow:hidden}
+.page{height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.page:before{content:"";position:absolute;inset:-10%;z-index:-1;background:
+radial-gradient(ellipse 50% 60% at 8% 8%,rgba(129,28,35,.18) 0%,rgba(100,19,30,.08) 40%,transparent 70%),
+radial-gradient(ellipse 55% 50% at 92% 6%,rgba(77,20,74,.14) 0%,rgba(122,18,107,.06) 45%,transparent 70%),
+radial-gradient(ellipse 60% 55% at 88% 94%,rgba(41,78,149,.14) 0%,rgba(17,24,79,.06) 45%,transparent 70%),
+radial-gradient(ellipse 50% 45% at 12% 92%,rgba(240,199,191,.60) 0%,rgba(250,236,235,.40) 40%,transparent 70%),
+linear-gradient(150deg,#fff 0%,#E6E2E4 18%,#F0C7BF 38%,#FAECEB 58%,#EAEEF5 78%,#C9D0F0 100%);animation:shift 24s ease-in-out infinite alternate}
+@keyframes shift{0%{transform:scale(1);opacity:.72}50%{transform:scale(1.06) translate(-.5%,.5%);opacity:.85}100%{transform:scale(1) translate(1%,-1%);opacity:.72}}
+header{height:56px;background:rgba(255,255,255,.92);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:2}
+.title{font-size:13px;font-weight:700}.sub{font-size:12px;color:var(--ink-3);margin-top:2px}.right{display:flex;align-items:center;gap:12px}.pill{border-radius:var(--r-pill);background:var(--brand);color:#fff;font-size:11px;font-weight:800;padding:7px 12px}.lang{border:1px solid var(--border);background:#fff;border-radius:var(--r-pill);padding:4px;display:flex;gap:2px}.lang button{border:0;border-radius:var(--r-pill);background:transparent;padding:6px 10px;font-size:11px;font-weight:800;color:var(--ink-3);cursor:pointer}.lang button.on{background:#1a1a1a;color:#fff}
+.hero{padding:18px 24px 8px;display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+.panel{background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-radius:var(--r);border-top:1px solid rgba(255,255,255,.7);border-left:1px solid rgba(255,255,255,.5);box-shadow:0 8px 40px rgba(100,120,200,.10),inset 0 1px 1px rgba(255,255,255,.8);padding:16px}
+h1{font-size:28px;line-height:1.05;margin:0 0 8px}p{margin:0;color:var(--ink-2);font-size:12px;line-height:1.55}.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kpi{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;box-shadow:var(--sh-sm)}.kpi b{font-size:20px}.kpi span{display:block;font-size:10px;color:var(--ink-3);margin-top:3px}
+.filter{height:40px;background:rgba(255,255,255,.9);border-top:1px solid var(--border-lt);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 24px}.chip{border:1px solid var(--border);border-radius:var(--r-pill);padding:6px 12px;background:#fff;font-size:11.5px;font-weight:700;color:var(--ink-3);cursor:pointer}.chip.on{background:#1a1a1a;color:#fff}
+.strip{flex:1;overflow:auto;padding:20px 24px 24px;display:flex;gap:16px;align-items:flex-start}
+.col{flex:1 1 300px;min-width:260px;max-width:420px;background:rgba(255,255,255,.20);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-radius:var(--r);border-top:1px solid rgba(255,255,255,.7);border-left:1px solid rgba(255,255,255,.5);box-shadow:0 8px 40px rgba(100,120,200,.10),inset 0 1px 1px rgba(255,255,255,.8);overflow:hidden}
+.col-h{background:#1a1a1a;color:#fff;text-align:center;font-size:13px;font-weight:900;padding:12px}.group{padding:10px 8px}.g-h{font-size:11px;font-weight:800;background:rgba(0,0,0,.04);border-left:3px solid var(--c);border-radius:var(--r-sm);padding:5px 7px;margin-bottom:8px}
+.card{position:relative;background:#fff;border:1px solid var(--border);border-left:3px solid var(--c);border-radius:var(--r-sm);padding:12px;margin-bottom:8px;box-shadow:var(--sh-sm);cursor:pointer;transition:.18s}.card:hover,.card.active{transform:translateX(2px);box-shadow:var(--sh-md);border-color:var(--brand)}.top{display:flex;gap:7px;align-items:center}.num{font-size:10px;color:var(--ink-4);font-weight:800}.name{font-size:11.5px;font-weight:800;flex:1}.ai{font-size:8.5px;font-weight:900;border-radius:var(--r-pill);background:var(--brand);color:#fff;padding:3px 7px}.desc{font-size:10px;color:var(--ink-3);line-height:1.45;margin-top:6px}.demo{margin-top:8px;text-align:right}.demo span{display:inline-block;background:var(--brand);color:#fff;border-radius:var(--r-pill);font-size:10px;font-weight:800;padding:5px 9px}
+.mock{position:fixed;right:28px;bottom:56px;width:min(420px,calc(100vw - 56px));background:#fff;border-radius:16px;box-shadow:var(--sh-lg);border:1px solid var(--border);overflow:hidden;z-index:9;display:none}.mock.show{display:block}.mock-head{background:#1a1a1a;color:#fff;padding:12px 14px;font-size:12px;font-weight:900;display:flex;justify-content:space-between}.mock-body{padding:14px}.mock-grid{display:grid;grid-template-columns:120px 1fr;gap:12px}.device{height:92px;border-radius:12px;background:linear-gradient(140deg,#eee,#fff);border:1px solid var(--border);position:relative;overflow:hidden}.device:before{content:"";position:absolute;inset:18px;border:2px solid #222;border-radius:4px}.hot{position:absolute;width:26px;height:26px;border:3px solid var(--brand);border-radius:50%;right:22px;top:26px}.score{height:8px;background:#eee;border-radius:9px;overflow:hidden;margin:8px 0}.score i{display:block;height:100%;background:var(--brand);width:var(--w)}.tag{display:inline-block;border-radius:var(--r-pill);background:var(--brand-lt);color:var(--brand);font-size:10px;font-weight:900;padding:5px 8px;margin:3px 3px 0 0}.mock h3{margin:0 0 4px;font-size:14px}.mock p{font-size:11px}.close{cursor:pointer;color:#fff}
+footer{height:40px;background:rgba(255,255,255,.9);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ink-4)}
+.lenovo-badge{position:fixed;right:0;top:50%;z-index:8;opacity:.7;pointer-events:none}.lenovo-badge img{transform:rotate(-90deg);transform-origin:right center;position:relative;right:20px}
+@media(max-width:900px){body{overflow:auto}.page{height:auto;min-height:100dvh}.hero{grid-template-columns:1fr}.strip{flex-direction:column}.col{max-width:none;width:100%}.mock{right:12px;bottom:52px}}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <div><div class="title" data-i="app">Return Quality AI Control Tower</div><div class="sub" data-i="sub">AI-enabled inspection, damage recognition and chargeback workflow</div></div>
+  <div class="right"><span class="pill">AI Workflow</span><div class="lang"><button id="en" class="on">EN</button><button id="zh">中文</button></div></div>
+</header>
+<section class="hero">
+ <div class="panel"><h1 data-i="h1">Lease-end return inspection standard process</h1><p data-i="intro">A practical target operating model for laptop, desktop and monitor rental returns. AI is positioned as an assistive control layer: it accelerates intake, visual damage classification, grading, evidence packaging and penalty recommendation while keeping human approval for disputes and final billing.</p></div>
+ <div class="panel kpis"><div class="kpi"><b>8</b><span data-i="k1">AI support nodes</span></div><div class="kpi"><b>4</b><span data-i="k2">human approval gates</span></div><div class="kpi"><b>1</b><span data-i="k3">evidence package</span></div></div>
+</section>
+<nav class="filter"><button class="chip on" data-filter="all" data-i="all">All</button><button class="chip" data-filter="ai" data-i="aionly">★ AI Nodes</button><button class="chip" data-filter="gate" data-i="gate">Approval Gates</button></nav>
+<main class="strip" id="strip"></main>
+<footer data-i="ftr">Global Asset Leasing · AI Return Inspection Prototype · Netlify-ready single HTML</footer>
+<div class="mock" id="mock"><div class="mock-head"><span id="mt">Mock-up</span><span class="close" onclick="hideMock()">×</span></div><div class="mock-body" id="mb"></div></div>
+<div class="lenovo-badge"><img src="https://origin-brandworld.lenovo.com/wp-content/uploads/2021/01/03_Logo_01Overview_6B_v-07-768x183.png" alt="Lenovo" height="56"/></div>
+</div>
+<script>
+const I={
+en:{app:"Return Quality AI Control Tower",sub:"AI-enabled inspection, damage recognition and chargeback workflow",h1:"Lease-end return inspection standard process",intro:"A practical target operating model for laptop, desktop and monitor rental returns. AI is positioned as an assistive control layer: it accelerates intake, visual damage classification, grading, evidence packaging and penalty recommendation while keeping human approval for disputes and final billing.",k1:"AI support nodes",k2:"human approval gates",k3:"evidence package",all:"All",aionly:"★ AI Nodes",gate:"Approval Gates",ftr:"Global Asset Leasing · AI Return Inspection Prototype · Netlify-ready single HTML"},
+zh:{app:"退租设备 AI 质检控制台",sub:"AI 支持的质检、破损识别与罚金流程",h1:"租赁期末退回设备标准检查流程",intro:"面向笔记本、台式机与显示器退租回收的目标流程。AI 作为辅助控制层，用于提升收货、影像识别、等级判定、证据打包和罚金建议效率；争议处理与最终收费仍保留人工审批。",k1:"AI 支持节点",k2:"人工审批关口",k3:"证据包",all:"全部",aionly:"★ AI 节点",gate:"审批关口",ftr:"全球设备租赁 · AI 退租质检原型 · 可直接部署 Netlify"}
+};
+const data=[
+{c:"#1557D0",t:{en:"1. Return Intake",zh:"1. 退回收货"},g:[
+{n:{en:"Logistics & entitlement",zh:"物流与权属"},cards:[
+["Return appointment & ASN matching","Match returned serial numbers against contract, shipment notice and expected return date.","退回预约与 ASN 匹配","核对序列号、合同、发货通知和预计退回日期。",true,false,"asn"],
+["Chain-of-custody capture","Create immutable intake record: photos, time, location, operator and parcel condition.","保管链记录","创建不可变收货记录：照片、时间、地点、操作员和包装状态。",true,true,"custody"]]}]},
+{c:"#008BCE",t:{en:"2. Visual Inspection",zh:"2. 外观质检"},g:[
+{n:{en:"Damage recognition",zh:"破损识别"},cards:[
+["360° image capture","Guided camera checklist for lid, palm rest, keyboard, screen, ports, chassis and accessories.","360° 影像采集","按引导拍摄 A/B/C/D 面、键盘、屏幕、接口、机身和配件。",true,false,"capture"],
+["AI damage detection","Detect cracks, dents, missing keys, screen bleeding, scratches, broken hinges and liquid marks.","AI 破损检测","识别裂纹、凹陷、缺键、漏液、划痕、转轴损坏和进液痕迹。",true,false,"vision"],
+["Severity grading","Classify cosmetic vs functional damage and assign minor / moderate / major grade.","严重度分级","区分外观与功能性破损，并给出轻微/中度/严重等级。",true,false,"grade"]]}]},
+{c:"#007C73",t:{en:"3. Functional Test",zh:"3. 功能检测"},g:[
+{n:{en:"Diagnostics",zh:"诊断"},cards:[
+["Automated health check","Run CPU, memory, battery, SSD, display, camera, Wi-Fi, keyboard and port tests.","自动健康检测","检测 CPU、内存、电池、硬盘、屏幕、摄像头、Wi-Fi、键盘和接口。",true,false,"diag"],
+["Data wipe verification","Confirm wipe certificate, BIOS lock removal and asset tag consistency.","数据清除验证","确认擦除证书、BIOS 锁解除和资产标签一致性。",false,true,"wipe"]]}]},
+{c:"#C24F0E",t:{en:"4. Chargeback Decision",zh:"4. 罚金判定"},g:[
+{n:{en:"Penalty control",zh:"罚金控制"},cards:[
+["Contract rule engine","Map inspection result to customer contract matrix, country policy, depreciation and fair-wear rules.","合同规则引擎","将质检结果映射到合同矩阵、国家政策、折旧和合理损耗规则。",true,false,"rules"],
+["AI charge recommendation","Generate charge item, amount range, confidence, repair-vs-replace suggestion and evidence pack.","AI 罚金建议","生成收费项目、金额区间、置信度、维修/更换建议和证据包。",true,false,"charge"],
+["Human approval / dispute","Reviewer approves, adjusts or waives charges; dispute evidence is tracked end-to-end.","人工审批/争议","审核员批准、调整或减免收费；争议证据全流程留痕。",false,true,"approve"]]}]},
+{c:"#6E2F8A",t:{en:"5. Billing & Analytics",zh:"5. 账单与分析"},g:[
+{n:{en:"Financial posting",zh:"财务入账"},cards:[
+["Invoice package creation","Create billing file with serial number, defect code, photos, diagnostic result and approval history.","账单包生成","生成包含序列号、缺陷代码、照片、诊断结果和审批记录的账单文件。",true,false,"invoice"],
+["Portfolio feedback loop","Analyze recurrent damages by customer, model, geography and carrier to improve pricing and packaging.","组合反馈闭环","按客户、机型、地区、承运商分析高频破损，反哺定价和包装。",true,false,"analytics"]]}]}
+];
+let lang="en", filter="all";
+function txt(a,b){return lang==="en"?a:b}
+function render(){
+ document.querySelectorAll("[data-i]").forEach(e=>e.textContent=I[lang][e.dataset.i]);
+ document.getElementById("en").classList.toggle("on",lang==="en"); document.getElementById("zh").classList.toggle("on",lang==="zh");
+ const strip=document.getElementById("strip"); strip.innerHTML="";
+ data.forEach((col,ci)=>{const c=document.createElement("section");c.className="col";c.innerHTML=`<div class="col-h">${col.t[lang]}</div>`;
+  col.g.forEach(g=>{let h=`<div class="group"><div class="g-h" style="--c:${col.c}">${g.n[lang]}</div>`;
+   g.cards.forEach((x,i)=>{const show=filter==="all"||(filter==="ai"&&x[4])||(filter==="gate"&&x[5]); if(!show)return;
+    h+=`<article class="card" style="--c:${col.c}" onmouseenter="showMock('${x[6]}')" onclick="showMock('${x[6]}')"><div class="top"><span class="num">${String(i+1).padStart(2,"0")}</span><span class="name">${txt(x[0],x[2])}</span>${x[4]?'<span class="ai">AI</span>':''}${x[5]?'<span class="ai" style="background:#1a1a1a">GATE</span>':''}</div><div class="desc">${txt(x[1],x[3])}</div><div class="demo"><span>▶ Mock-up</span></div></article>`});
+   c.innerHTML+=h+"</div>";
+  }); strip.appendChild(c);
+ });
+}
+const mocks={
+asn:["ASN Match Console","Serial confidence 98% · Contract active · Return D+3","ASN 匹配控制台","序列号置信度 98% · 合同有效 · 退回 D+3",66,["Serial matched","Late-return flag","Missing adapter"]],
+custody:["Custody Evidence Pack","Parcel dent found. Intake video and operator signature attached.","保管链证据包","发现包装凹陷。已附收货视频和操作员签名。",80,["Photo hash","Timestamp","Operator ID"]],
+capture:["Guided Capture","Required angles completed: 12/12. Glare risk detected on screen photo.","拍摄引导","必拍角度完成：12/12。屏幕照片检测到反光风险。",92,["A-cover","Screen","Ports"]],
+vision:["Vision Damage AI","Detected: corner dent, C-cover scratch, LCD pressure mark.","视觉破损 AI","检测到：边角凹陷、C 面划痕、LCD 压痕。",74,["Dent","Scratch","LCD mark"]],
+grade:["Severity Grading","Damage level: Moderate. Functional risk: low. Cosmetic charge likely.","严重度分级","破损等级：中度。功能风险：低。可能产生外观罚金。",58,["Moderate","Cosmetic","Review"]],
+diag:["Device Diagnostics","Battery health 82%, SSD pass, keyboard pass, display warning.","设备诊断","电池健康度 82%，硬盘通过，键盘通过，屏幕预警。",82,["Battery OK","SSD Pass","Display warning"]],
+wipe:["Wipe Verification","Wipe certificate exists. BIOS lock requires manual confirmation.","擦除验证","擦除证书存在。BIOS 锁需要人工确认。",70,["Wipe cert","BIOS check","Asset tag"]],
+rules:["Rule Engine","Matched country policy, fair-wear threshold and contract penalty matrix.","规则引擎","已匹配国家政策、合理损耗阈值和合同罚金矩阵。",76,["Policy match","Fair wear","Matrix"]],
+charge:["AI Charge Recommendation","Suggested charge: LCD pressure mark + cosmetic dent. Confidence 87%.","AI 罚金建议","建议收费：LCD 压痕 + 外观凹陷。置信度 87%。",87,["$ Estimate","Evidence","Confidence"]],
+approve:["Approval Workspace","Reviewer can approve, adjust, waive or send customer dispute package.","审批工作台","审核员可批准、调整、减免或发送客户争议材料。",50,["Approve","Adjust","Waive"]],
+invoice:["Invoice Package","Billing file generated with photos, codes, diagnostic result and approval log.","账单包","账单文件已生成，含照片、代码、诊断结果和审批日志。",95,["Defect code","Photos","Approval log"]],
+analytics:["Portfolio Analytics","Damage trend: hinge issues up 12% on one model, mostly one carrier.","组合分析","趋势：某机型转轴问题上升 12%，主要集中于一个承运商。",62,["Trend","Model risk","Carrier risk"]]
+};
+function showMock(k){const m=mocks[k], box=document.getElementById("mock");document.getElementById("mt").textContent=lang==="en"?m[0]:m[2];document.getElementById("mb").innerHTML=`<div class="mock-grid"><div class="device"><span class="hot"></span></div><div><h3>${lang==="en"?m[0]:m[2]}</h3><p>${lang==="en"?m[1]:m[3]}</p><div class="score" style="--w:${m[4]}%"><i></i></div>${m[5].map(t=>`<span class="tag">${t}</span>`).join("")}</div></div>`;box.classList.add("show")}
+function hideMock(){document.getElementById("mock").classList.remove("show")}
+document.getElementById("en").onclick=()=>{lang="en";render()};document.getElementById("zh").onclick=()=>{lang="zh";render()};
+document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));b.classList.add("on");filter=b.dataset.filter;render()});
+render();
+</script>
+</body></html>

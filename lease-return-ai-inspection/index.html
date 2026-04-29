@@ -7,35 +7,58 @@
 <style>
 body{margin:0;font-family:Arial;background:#f5f5f5}
 .container{padding:20px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.header{display:flex;justify-content:space-between;align-items:center}
+.view-toggle{border:1px solid #ddd;border-radius:999px;padding:3px;display:flex;gap:4px}
+.view-toggle button{border:0;padding:6px 12px;border-radius:999px;background:transparent;font-weight:700;font-size:12px;cursor:pointer;color:#666}
+.view-toggle button.on{background:#1a1a1a;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
 .card{background:#fff;border-radius:12px;padding:16px;position:relative;border:1px solid #ddd}
 .badge{position:absolute;top:10px;right:10px;background:#E2231A;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:bold}
 .mapping{margin-top:30px;background:#fff;padding:20px;border-radius:12px}
 .row{margin-bottom:12px}
 .bar{height:8px;background:#eee;border-radius:6px;overflow:hidden;margin-top:4px}
 .bar i{display:block;height:100%;background:#E2231A}
+.biz-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
+.biz-card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px}
 </style>
 </head>
 <body>
 <div class="container">
-<h2>Return Inspection Workflow (Aligned with ARDIC)</h2>
+<div class="header">
+<h2>Return Inspection Workflow</h2>
+<div class="view-toggle">
+<button id="demoBtn" class="on">Demo</button>
+<button id="bizBtn">Business</button>
+</div>
+</div>
+
+<div id="demoView">
 <div class="grid">
-<div class="card"><div class="badge">1</div><b>Image Capture</b><p>Guided standardized image capture</p></div>
-<div class="card"><div class="badge">2</div><b>AI Damage Detection</b><p>Computer vision damage recognition</p></div>
-<div class="card"><div class="badge">3</div><b>Grading Engine</b><p>Map to grading matrix</p></div>
-<div class="card"><div class="badge">4</div><b>Charge Calculation</b><p>Penalty calculation engine</p></div>
-<div class="card"><div class="badge">5</div><b>Inspection Report</b><p>Evidence-based reporting</p></div>
-<div class="card"><div class="badge">6</div><b>System Integration</b><p>Invoice + financial system integration</p></div>
+<div class="card"><div class="badge">1</div><b>Image Capture</b></div>
+<div class="card"><div class="badge">2</div><b>AI Damage Detection</b></div>
+<div class="card"><div class="badge">3</div><b>Grading Engine</b></div>
+<div class="card"><div class="badge">4</div><b>Charge Calculation</b></div>
+<div class="card"><div class="badge">5</div><b>Inspection Report</b></div>
+<div class="card"><div class="badge">6</div><b>System Integration</b></div>
 </div>
+</div>
+
+<div id="bizView" style="display:none">
 <div class="mapping">
-<h3>ARDIC Requirement Mapping & XDoc Coverage</h3>
-<div class="row">① Image Capture → R4 Standardized process<br><div class="bar"><i style="width:85%"></i></div>85%</div>
-<div class="row">② AI Detection → R1 Automated inspection<br><div class="bar"><i style="width:70%"></i></div>70%</div>
-<div class="row">③ Grading → R3 Grading matrix<br><div class="bar"><i style="width:60%"></i></div>60%</div>
-<div class="row">④ Charge → R3 Damage charge<br><div class="bar"><i style="width:75%"></i></div>75%</div>
-<div class="row">⑤ Report → R2 Reporting<br><div class="bar"><i style="width:80%"></i></div>80%</div>
-<div class="row">⑥ Integration → R5 Integration<br><div class="bar"><i style="width:40%"></i></div>40%</div>
+<h3>ARDIC Mapping</h3>
+<div class="row">① → R4<div class="bar"><i style="width:85%"></i></div></div>
+<div class="row">② → R1<div class="bar"><i style="width:70%"></i></div></div>
 </div>
 </div>
+</div>
+
+<script>
+const demoBtn=document.getElementById('demoBtn');
+const bizBtn=document.getElementById('bizBtn');
+const demoView=document.getElementById('demoView');
+const bizView=document.getElementById('bizView');
+demoBtn.onclick=()=>{demoBtn.classList.add('on');bizBtn.classList.remove('on');demoView.style.display='block';bizView.style.display='none'};
+bizBtn.onclick=()=>{bizBtn.classList.add('on');demoBtn.classList.remove('on');demoView.style.display='none';bizView.style.display='block'};
+</script>
 </body>
 </html>

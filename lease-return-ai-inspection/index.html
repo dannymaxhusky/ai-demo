@@ -3,62 +3,43 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AI Return Quality Inspection Workflow</title>
+<title>AI Return Inspection Workflow</title>
 <style>
-body{margin:0;font-family:Arial;background:#f5f5f5}
-.container{padding:20px}
-.header{display:flex;justify-content:space-between;align-items:center}
-.view-toggle{border:1px solid #ddd;border-radius:999px;padding:3px;display:flex;gap:4px}
-.view-toggle button{border:0;padding:6px 12px;border-radius:999px;background:transparent;font-weight:700;font-size:12px;cursor:pointer;color:#666}
-.view-toggle button.on{background:#1a1a1a;color:#fff}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
-.card{background:#fff;border-radius:12px;padding:16px;position:relative;border:1px solid #ddd}
-.badge{position:absolute;top:10px;right:10px;background:#E2231A;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:bold}
-.mapping{margin-top:30px;background:#fff;padding:20px;border-radius:12px}
-.row{margin-bottom:12px}
-.bar{height:8px;background:#eee;border-radius:6px;overflow:hidden;margin-top:4px}
+body{margin:0;font-family:Arial;background:linear-gradient(150deg,#fff,#f3f4f7)}
+.container{padding:24px}
+h2{margin-bottom:20px}
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:#fff;border:1px solid #ddd;border-radius:14px;padding:16px}
+.card b{font-size:15px}
+.sub{font-size:12px;color:#666;margin-top:6px}
+.ardic{margin-top:10px;font-size:11px;color:#444}
+.bar{margin-top:8px;height:6px;background:#eee;border-radius:4px;overflow:hidden}
 .bar i{display:block;height:100%;background:#E2231A}
-.biz-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
-.biz-card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px}
+.summary{margin-top:30px;background:#fff;border-radius:14px;padding:20px;border:1px solid #ddd}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.summary b{font-size:13px}
+.summary p{font-size:11px;color:#444;line-height:1.5}
 </style>
 </head>
 <body>
 <div class="container">
-<div class="header">
-<h2>Return Inspection Workflow</h2>
-<div class="view-toggle">
-<button id="demoBtn" class="on">Demo</button>
-<button id="bizBtn">Business</button>
+<h2>AI Return Inspection Workflow（Enhanced Business View）</h2>
+<div class="flow">
+<div class="card"><b>① 图像采集 / Image Capture</b><div class="sub">标准化拍摄流程</div><div class="ardic">Aligned: Standardized process</div><div class="bar"><i style="width:85%"></i></div><div class="sub">85%</div></div>
+<div class="card"><b>② AI检测 / AI Inspection</b><div class="sub">计算机视觉检测</div><div class="ardic">Aligned: Automated inspection</div><div class="bar"><i style="width:70%"></i></div><div class="sub">70%</div></div>
+<div class="card"><b>③ 分级引擎 / Grading</b><div class="sub">对接 LGFS matrix</div><div class="ardic">Aligned: Grading matrix</div><div class="bar"><i style="width:60%"></i></div><div class="sub">60%</div></div>
+<div class="card"><b>④ 费用计算 / Charge</b><div class="sub">自动费用计算</div><div class="ardic">Aligned: Damage charge</div><div class="bar"><i style="width:75%"></i></div><div class="sub">75%</div></div>
+<div class="card"><b>⑤ 检测报告 / Report</b><div class="sub">带图片证据报告</div><div class="ardic">Aligned: Reporting</div><div class="bar"><i style="width:80%"></i></div><div class="sub">80%</div></div>
+<div class="card"><b>⑥ 系统集成 / Integration</b><div class="sub">Lenovo / Odessa</div><div class="ardic">Aligned: Integration</div><div class="bar"><i style="width:40%"></i></div><div class="sub">40%</div></div>
 </div>
-</div>
-
-<div id="demoView">
-<div class="grid">
-<div class="card"><div class="badge">1</div><b>Image Capture</b></div>
-<div class="card"><div class="badge">2</div><b>AI Damage Detection</b></div>
-<div class="card"><div class="badge">3</div><b>Grading Engine</b></div>
-<div class="card"><div class="badge">4</div><b>Charge Calculation</b></div>
-<div class="card"><div class="badge">5</div><b>Inspection Report</b></div>
-<div class="card"><div class="badge">6</div><b>System Integration</b></div>
-</div>
-</div>
-
-<div id="bizView" style="display:none">
-<div class="mapping">
-<h3>ARDIC Mapping</h3>
-<div class="row">① → R4<div class="bar"><i style="width:85%"></i></div></div>
-<div class="row">② → R1<div class="bar"><i style="width:70%"></i></div></div>
+<div class="summary">
+<h3>Business Alignment Summary</h3>
+<div class="summary-grid">
+<div><b>ARDIC Requirement</b><p>Automated laptop return inspection capability using AI and computer vision...</p></div>
+<div><b>Workflow Mapping</b><p>① Capture → Standardized<br>② AI → Inspection<br>③ Grading → Matrix</p></div>
+<div><b>XDoc Coverage</b><p>~70% complete<br>Gap: Integration</p></div>
 </div>
 </div>
 </div>
-
-<script>
-const demoBtn=document.getElementById('demoBtn');
-const bizBtn=document.getElementById('bizBtn');
-const demoView=document.getElementById('demoView');
-const bizView=document.getElementById('bizView');
-demoBtn.onclick=()=>{demoBtn.classList.add('on');bizBtn.classList.remove('on');demoView.style.display='block';bizView.style.display='none'};
-bizBtn.onclick=()=>{bizBtn.classList.add('on');demoBtn.classList.remove('on');demoView.style.display='none';bizView.style.display='block'};
-</script>
 </body>
 </html>

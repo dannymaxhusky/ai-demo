@@ -1,6 +1,18 @@
 // netlify/functions/credit-check.js
 // Serverless function: calls OpenAI, Gemini, Claude in parallel for credit assessment
 // Optional: ABN Lookup for Australian companies
+//
+// Supported environment variables:
+//   OPENAI_API_KEY      — required for OpenAI
+//   OPENAI_BASE_URL     — optional, override base URL (e.g. domestic proxy)
+//   OPENAI_MODEL        — optional, override model name (default: gpt-4o-mini)
+//   GEMINI_API_KEY      — required for Gemini
+//   GEMINI_BASE_URL     — optional, override base URL
+//   GEMINI_MODEL        — optional, override model name (default: gemini-1.5-flash)
+//   ANTHROPIC_API_KEY   — required for Claude
+//   ANTHROPIC_BASE_URL  — optional, override base URL
+//   ANTHROPIC_MODEL     — optional, override model name (default: claude-3-haiku-20240307)
+//   ABN_GUID            — optional, enables ABN Lookup for Australian companies
 
 exports.handler = async (event) => {
   const headers = {
@@ -88,17 +100,26 @@ Provide a structured assessment in the following JSON format (respond ONLY with 
 // ── OpenAI ──────────────────────────────────────────────────────────────────
 async function callOpenAI(prompt, apiKey) {
   if (!apiKey) throw new Error('OPENAI_API_KEY not configured');
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+
+  // Support domestic proxy: OPENAI_BASE_URL overrides the endpoint
+  const baseUrl = (process.env.OPENAI_BASE_URL || 'https://api.openai.com').replace(/\/$/, '');
+  const model   = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  const url     = `${baseUrl}/v1/chat/completions`;
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
       max_tokens: 800,
     }),
   });
-  if (!res.ok) throw new Error(`OpenAI HTTP ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`OpenAI HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+  }
   const data = await res.json();
   const text = data.choices?.[0]?.message?.content || '';
   return parseJSON(text);
@@ -107,7 +128,11 @@ async function callOpenAI(prompt, apiKey) {
 // ── Gemini ───────────────────────────────────────────────────────────────────
 async function callGemini(prompt, apiKey) {
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+  const model   = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const baseUrl = (process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com').replace(/\/$/, '');
+  const url     = `${baseUrl}/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -116,7 +141,10 @@ async function callGemini(prompt, apiKey) {
       generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
     }),
   });
-  if (!res.ok) throw new Error(`Gemini HTTP ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`Gemini HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+  }
   const data = await res.json();
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   return parseJSON(text);
@@ -125,7 +153,12 @@ async function callGemini(prompt, apiKey) {
 // ── Claude ───────────────────────────────────────────────────────────────────
 async function callClaude(prompt, apiKey) {
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+
+  const baseUrl = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/$/, '');
+  const model   = process.env.ANTHROPIC_MODEL || 'claude-3-haiku-20240307';
+  const url     = `${baseUrl}/v1/messages`;
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
@@ -133,12 +166,15 @@ async function callClaude(prompt, apiKey) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
+      model,
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
-  if (!res.ok) throw new Error(`Claude HTTP ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`Claude HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+  }
   const data = await res.json();
   const text = data.content?.[0]?.text || '';
   return parseJSON(text);

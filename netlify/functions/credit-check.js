@@ -42,22 +42,29 @@ exports.handler = async (event) => {
 
   const companyName = company.trim();
 
-  // Build the credit assessment prompt
-  const prompt = `You are a business credit risk analyst. Assess the credit risk profile of the company: "${companyName}".
+  // Build the leasing-focused credit assessment prompt
+  const prompt = `You are a credit risk analyst specialising in IT equipment leasing (computers, servers, and related hardware). Your client is an equipment rental company evaluating whether to lease IT equipment to the following business: "${companyName}".
 
-Provide a structured assessment in the following JSON format (respond ONLY with valid JSON, no markdown):
+Assess this company's suitability as a leasing customer and respond ONLY with valid JSON (no markdown, no explanation outside the JSON):
 {
-  "company": "<confirmed company name or best match>",
+  "company": "<confirmed or best-matched company name>",
   "country": "<likely country of incorporation>",
   "industry": "<industry sector>",
+  "companySize": "<Micro (<10)|Small (10-49)|Medium (50-249)|Large (250+)|Unknown>",
+  "yearsInOperation": "<estimated years, e.g. '5-10 years' or 'Unknown'>",
+  "leasingRisk": "<Low|Moderate|High|Very High|Unknown>",
   "creditRating": "<AAA|AA|A|BBB|BB|B|CCC|CC|C|D|Unknown>",
-  "riskLevel": "<Low|Moderate|High|Very High|Unknown>",
-  "summary": "<2-3 sentence executive summary of credit risk>",
-  "positives": ["<strength 1>", "<strength 2>"],
-  "risks": ["<risk factor 1>", "<risk factor 2>"],
-  "recommendation": "<Invest|Caution|Avoid|Insufficient Data>",
+  "summary": "<2-3 sentence summary focused on this company's ability and likelihood to honour a rental agreement for IT equipment>",
+  "leasingDecision": "<Approve|Approve with Conditions|Decline|Insufficient Data>",
+  "recommendedCreditLimit": "<suggested maximum total lease value in AUD, e.g. 'AUD $20,000–$50,000' or 'N/A'>",
+  "suggestedDeposit": "<recommended upfront deposit as a percentage, e.g. '10%' or '30%' or 'Nil'>",
+  "suggestedPaymentTerms": "<e.g. 'Monthly, 12–24 month term' or 'Quarterly, short-term only'>",
+  "strengths": ["<factor that supports approving the lease>"],
+  "riskFactors": ["<factor that increases leasing risk>"],
+  "conditions": ["<condition to attach if approving, e.g. 'Personal guarantee required' — empty array if none>"],
+  "itEquipmentNeed": "<Low|Moderate|High — likelihood this type of business genuinely needs IT equipment>",
   "confidence": "<High|Medium|Low>",
-  "disclaimer": "This is an AI-generated assessment for informational purposes only and does not constitute financial advice."
+  "disclaimer": "AI-generated assessment for internal reference only. Not a substitute for formal credit checks or legal advice."
 }`;
 
   // Determine if possibly Australian

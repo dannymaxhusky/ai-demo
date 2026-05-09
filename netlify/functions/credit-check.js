@@ -64,7 +64,14 @@ Provide a structured assessment in the following JSON format (respond ONLY with 
   const ausKeywords = /\b(australia|australian|pty|ltd|asx|nsw|vic|qld|sa|wa|tas|act|nt)\b/i;
   const mightBeAustralian = ausKeywords.test(companyName);
 
-  const results = {};
+  // Capture actual model names used (for frontend display)
+  const modelNames = {
+    openai: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    gemini: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+    claude: process.env.ANTHROPIC_MODEL || 'claude-3-haiku-20240307',
+  };
+
+  const results = { _models: modelNames };
 
   // Run all API calls in parallel
   const tasks = await Promise.allSettled([
@@ -283,16 +290,31 @@ async function callABN(companyName, guid) {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function parseJSON(text) {
-  // Strip markdown code fences if present
-  const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
-  try {
-    return JSON.parse(cleaned);
-  } catch {
-    // Try to extract JSON object from text
-    const match = cleaned.match(/\{[\s\S]*\}/);
-    if (match) {
-      try { return JSON.parse(match[0]); } catch { /* fall through */ }
-    }
-    return { raw: text, error: 'Could not parse structured response' };
+  if (!text) return { error: 'Empty response from model' };
+
+  // 1. Strip markdown code fences (```json ... ``` or ``` ... ```)
+  let cleaned = text
+    .replace(/^```(?:json)?\s*/im, '')
+    .replace(/\s*```\s*$/im, '')
+    .trim();
+
+  // 2. Try direct parse
+  try { return JSON.parse(cleaned); } catch { /* continue */ }
+
+  // 3. Find the outermost { ... } block (handles prose before/after JSON)
+  const start = cleaned.indexOf('{');
+  const end   = cleaned.lastIndexOf('}');
+  if (start !== -1 && end > start) {
+    const candidate = cleaned.slice(start, end + 1);
+    try { return JSON.parse(candidate); } catch { /* continue */ }
   }
+
+  // 4. Try greedy regex extraction as last resort
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  if (match) {
+    try { return JSON.parse(match[0]); } catch { /* fall through */ }
+  }
+
+  // 5. Give up — return raw text so the UI can show something
+  return { error: 'Could not parse structured response', raw: text.slice(0, 300) };
 }

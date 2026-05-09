@@ -450,7 +450,7 @@
     {
       key: 'openai',
       name: 'OpenAI',
-      model: 'GPT-4o mini',
+      model: 'GPT-4o mini',          // default; overridden at runtime by _models
       emoji: '🤖',
       color: '#10a37f',
       bgColor: 'rgba(16,163,127,.15)',
@@ -474,6 +474,13 @@
   ];
 
   function buildCards(data, company) {
+    // Override display model names with actual names from server env vars
+    if (data._models) {
+      PROVIDERS.forEach(p => {
+        const m = data._models[p.key];
+        if (m) p.model = m;
+      });
+    }
     document.getElementById('results-title').textContent =
       `Assessment: ${company}`;
     document.getElementById('results-sub').textContent =

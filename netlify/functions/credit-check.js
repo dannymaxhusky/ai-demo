@@ -126,58 +126,113 @@ async function callOpenAI(prompt, apiKey) {
 }
 
 // ── Gemini ───────────────────────────────────────────────────────────────────
+// If GEMINI_BASE_URL is set, assume it's an OpenAI-compatible proxy
+// (e.g. shubiaobiao.com) and use /v1/chat/completions format.
+// Otherwise call Google's native Generative Language API.
 async function callGemini(prompt, apiKey) {
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
-  const model   = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-  const baseUrl = (process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com').replace(/\/$/, '');
-  const url     = `${baseUrl}/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const model      = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const customBase = process.env.GEMINI_BASE_URL;
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
-    }),
-  });
-  if (!res.ok) {
-    const errBody = await res.text().catch(() => '');
-    throw new Error(`Gemini HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+  let res;
+  if (customBase) {
+    // OpenAI-compatible proxy path
+    const baseUrl = customBase.replace(/\/$/, '');
+    const url     = `${baseUrl}/v1/chat/completions`;
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: 800,
+      }),
+    });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`Gemini(proxy) HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+    }
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '';
+    return parseJSON(text);
+  } else {
+    // Google native path
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
+      }),
+    });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`Gemini HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+    }
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    return parseJSON(text);
   }
-  const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  return parseJSON(text);
 }
 
 // ── Claude ───────────────────────────────────────────────────────────────────
+// If ANTHROPIC_BASE_URL is set, assume OpenAI-compatible proxy and use
+// /v1/chat/completions. Otherwise use Anthropic's native /v1/messages API.
 async function callClaude(prompt, apiKey) {
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
 
-  const baseUrl = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/$/, '');
-  const model   = process.env.ANTHROPIC_MODEL || 'claude-3-haiku-20240307';
-  const url     = `${baseUrl}/v1/messages`;
+  const model      = process.env.ANTHROPIC_MODEL || 'claude-3-haiku-20240307';
+  const customBase = process.env.ANTHROPIC_BASE_URL;
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  if (!res.ok) {
-    const errBody = await res.text().catch(() => '');
-    throw new Error(`Claude HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+  let res;
+  if (customBase) {
+    // OpenAI-compatible proxy path
+    const baseUrl = customBase.replace(/\/$/, '');
+    const url     = `${baseUrl}/v1/chat/completions`;
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: 800,
+      }),
+    });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`Claude(proxy) HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+    }
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '';
+    return parseJSON(text);
+  } else {
+    // Anthropic native path
+    const url = 'https://api.anthropic.com/v1/messages';
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`Claude HTTP ${res.status}${errBody ? ': ' + errBody.slice(0, 120) : ''}`);
+    }
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+    return parseJSON(text);
   }
-  const data = await res.json();
-  const text = data.content?.[0]?.text || '';
-  return parseJSON(text);
 }
 
 // ── ABN Lookup ───────────────────────────────────────────────────────────────

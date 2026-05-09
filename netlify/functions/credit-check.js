@@ -127,9 +127,12 @@ async function callOpenAI(prompt, apiKey) {
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [
+        { role: 'system', content: 'You are a JSON API. Output only valid JSON with no markdown, no code fences, no explanation.' },
+        { role: 'user', content: prompt },
+      ],
       temperature: 0.3,
-      max_tokens: 800,
+      max_tokens: 1500,
     }),
   });
   if (!res.ok) {
@@ -161,9 +164,12 @@ async function callGemini(prompt, apiKey) {
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+          { role: 'system', content: 'You are a JSON API. Output only valid JSON with no markdown, no code fences, no explanation.' },
+          { role: 'user', content: prompt },
+        ],
         temperature: 0.3,
-        max_tokens: 800,
+        max_tokens: 1500,
       }),
     });
     if (!res.ok) {
@@ -181,7 +187,7 @@ async function callGemini(prompt, apiKey) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
+        generationConfig: { temperature: 0.3, maxOutputTokens: 1500 },
       }),
     });
     if (!res.ok) {
@@ -213,9 +219,12 @@ async function callClaude(prompt, apiKey) {
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model,
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+          { role: 'system', content: 'You are a JSON API. Output only valid JSON with no markdown, no code fences, no explanation.' },
+          { role: 'user', content: prompt },
+        ],
         temperature: 0.3,
-        max_tokens: 800,
+        max_tokens: 1500,
       }),
     });
     if (!res.ok) {
@@ -237,7 +246,8 @@ async function callClaude(prompt, apiKey) {
       },
       body: JSON.stringify({
         model,
-        max_tokens: 800,
+        max_tokens: 1500,
+        system: 'You are a JSON API. Output only valid JSON with no markdown, no code fences, no explanation.',
         messages: [{ role: 'user', content: prompt }],
       }),
     });

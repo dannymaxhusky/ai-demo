@@ -102,7 +102,9 @@ async function callOpenAI(prompt, apiKey) {
   if (!apiKey) throw new Error('OPENAI_API_KEY not configured');
 
   // Support domestic proxy: OPENAI_BASE_URL overrides the endpoint
-  const baseUrl = (process.env.OPENAI_BASE_URL || 'https://api.openai.com').replace(/\/$/, '');
+  // Strip trailing slash AND trailing /v1 so users can safely include or omit it
+  const baseUrl = (process.env.OPENAI_BASE_URL || 'https://api.openai.com')
+    .replace(/\/+$/, '').replace(/\/v1$/, '');
   const model   = process.env.OPENAI_MODEL || 'gpt-4o-mini';
   const url     = `${baseUrl}/v1/chat/completions`;
 
@@ -138,7 +140,7 @@ async function callGemini(prompt, apiKey) {
   let res;
   if (customBase) {
     // OpenAI-compatible proxy path
-    const baseUrl = customBase.replace(/\/$/, '');
+    const baseUrl = customBase.replace(/\/+$/, '').replace(/\/v1$/, '');
     const url     = `${baseUrl}/v1/chat/completions`;
     res = await fetch(url, {
       method: 'POST',
@@ -190,7 +192,7 @@ async function callClaude(prompt, apiKey) {
   let res;
   if (customBase) {
     // OpenAI-compatible proxy path
-    const baseUrl = customBase.replace(/\/$/, '');
+    const baseUrl = customBase.replace(/\/+$/, '').replace(/\/v1$/, '');
     const url     = `${baseUrl}/v1/chat/completions`;
     res = await fetch(url, {
       method: 'POST',
